@@ -1,4 +1,3 @@
-using System.IO;
 using Forms = System.Windows.Forms;
 
 namespace WriteMind.Desktop.Services;
@@ -16,10 +15,11 @@ internal sealed class TrayIcon : IDisposable
     {
         _pause = pause;
         _resume = resume;
-        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "writemind.ico");
+        // Embedded so the icon survives single-file publishing.
+        using var iconStream = typeof(TrayIcon).Assembly.GetManifestResourceStream("WriteMind.Desktop.writemind.ico");
         _icon = new Forms.NotifyIcon
         {
-            Icon = File.Exists(iconPath) ? new System.Drawing.Icon(iconPath) : System.Drawing.SystemIcons.Application,
+            Icon = iconStream is null ? System.Drawing.SystemIcons.Application : new System.Drawing.Icon(iconStream),
             Text = "WriteMind AI",
             Visible = true,
         };

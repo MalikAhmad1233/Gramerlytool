@@ -122,26 +122,26 @@ all three stacks.
 │   │   ├── services/             account, usage aggregation, data export/deletion
 │   │   └── engine/               the intelligence engine (see §4)
 │   └── tests/                    pytest (unit + API + real LanguageTool integration)
-├── extension/                    WXT · React 18 · TypeScript · MV3
+├── extension/                    WXT · React 19 · TypeScript · MV3
 │   ├── wxt.config.ts
 │   ├── entrypoints/
-│   │   ├── background.ts         service worker: API, auth refresh, in-flight cancellation
-│   │   ├── content/              content script: session manager + shadow-DOM UI
+│   │   ├── background.ts         service worker: API, auth refresh, in-flight cancellation, sync, badge
+│   │   ├── content/index.tsx     content script: mounts the shadow-DOM UI and the Assistant controller
 │   │   ├── popup/                toolbar popup (React)
-│   │   └── options/              settings, account, dictionary (React)
+│   │   └── options/              settings, account, dictionary, rules, sites (React)
 │   ├── src/
-│   │   ├── api/                  typed client + generated OpenAPI types
-│   │   ├── editors/              text maps & adapters (textarea, contenteditable, sites)
-│   │   ├── overlay/              highlight geometry + renderer
-│   │   ├── ui/                   React components (card, panel, badge, rewrite)
-│   │   ├── core/                 suggestion store, rebasing, debounce, sensitive policy
-│   │   └── storage/              typed chrome.storage wrappers
-│   └── tests/                    vitest (jsdom) + Playwright e2e with the real extension
+│   │   ├── shared/               API types, message protocol, API client, settings storage, site profiles
+│   │   ├── core/                 suggestion store, offset rebasing, span validation, debounce scheduler
+│   │   ├── editors/              sensitive-field policy, text maps, textarea mirror, adapters + apply pipeline
+│   │   ├── content/              Assistant controller (sessions, geometry, hit-testing, actions)
+│   │   └── ui/                   React components (underlines, badge, card, panel, rewrite) + styles
+│   ├── tests/                    vitest (jsdom) unit + contract tests
+│   └── e2e/                      Playwright: real Chromium + built extension + live API
 ├── desktop/                      .NET 10
 │   ├── WriteMind.slnx
 │   ├── src/
 │   │   ├── WriteMind.Core/       net10.0 — API client, models, tracker, policy, settings (cross-platform, unit-tested)
-│   │   └── WriteMind.Desktop/    net10.0-windows WPF — UIA integration, overlay, tray, windows
+│   │   └── WriteMind.Desktop/    net10.0-windows WPF — Automation/ (UIA), Overlay/, Controls/, Views/, Services/
 │   └── tests/WriteMind.Core.Tests/  xUnit
 ├── infra/
 │   ├── docker-compose.yml        postgres + languagetool + backend
@@ -250,7 +250,7 @@ vocabulary, explicitly added by the user.
 ```sql
 users (
   id              uuid PK,
-  email           citext UNIQUE NOT NULL,
+  email           varchar(320) UNIQUE NOT NULL,  -- stored trimmed + lower-cased
   password_hash   text NOT NULL,            -- argon2id
   display_name    text,
   plan            text NOT NULL DEFAULT 'free',   -- free | premium
@@ -361,9 +361,9 @@ Playwright for e2e with the real unpacked extension.
 | `editors/textMap.ts` | Walks a contenteditable root into flat text with block-level `\n` and a segment table → `offset ↔ (node, nodeOffset)` both ways. Skips adapter-excluded subtrees (Gmail quoted text, signatures). |
 | `editors/mirror.ts` | Textarea/input geometry via mirror element with copied computed styles → client rects for any range. |
 | `editors/adapters.ts` | `TextareaAdapter`, `ContentEditableAdapter` + site profiles (Gmail, WhatsApp Web/Lexical, LinkedIn/Quill, generic). Uniform interface: `getText()`, `getRects(start,end)`, `apply(start,end,expected,replacement)`. |
-| `editors/apply.ts` | Writes **only** on Accept: select range → `execCommand('insertText')` (keeps undo, fires `beforeinput`/`input` for React/Lexical/Quill) → verify → fallback `InputEvent` / synthetic paste → verify → otherwise copy to clipboard and tell the user. Refuses if the span no longer equals `expected`. |
-| `core/store.ts` | Suggestion state per field: merge fast/full results, rebase offsets on edits, ignored fingerprints, stale-response rejection. |
-| `overlay/*` | Positions underline segments in a fixed, pointer-transparent layer inside a shadow root; repositions on scroll/resize/ResizeObserver/MutationObserver via rAF. |
+| `editors/adapters.ts` (`apply`) | Writes **only** on Accept: select range → `execCommand('insertText')` (keeps undo, fires `beforeinput`/`input` for React/Lexical/Quill) → verify → fallback `InputEvent` / synthetic paste → verify → otherwise copy to clipboard and tell the user. Refuses if the span no longer equals `expected`. |
+| `core/store.ts`, `core/rebase.ts` | Suggestion state per field: merge fast/full results, rebase offsets on edits, ignored fingerprints, boundary-aware span validation. |
+| `content/assistant.ts` | Field sessions, geometry and clipping, hit-testing, all user actions; renders via rAF on scroll/resize/ResizeObserver/MutationObserver. |
 | `ui/*` | React in shadow DOM: issue badge (count, colour by severity), suggestion card (Accept / Ignore / Ignore rule / Add to dictionary), assistant panel (all issues + **Rewrite** tab with Professional / Casual / Formal / Friendly / Concise). |
 
 **Permissions**: `storage`, `activeTab`-free design (content script declared
@@ -386,9 +386,10 @@ statically), host access `<all_urls>` for editors + backend. No `scripting`,
   `SettingsStore` (JSON + pluggable secret protector), `TextSpanLocator`
   (find the expected span near an offset when the host app's text shifts).
 * `WriteMind.Desktop` (net10.0-windows WPF):
-  * `Automation/FocusMonitor` — UIA focus-changed events (+ WinEvent
-    `EVENT_OBJECT_FOCUS` fallback), filters via `AppCatalog` + `SensitiveFieldPolicy`
-    (`IsPassword`, control type, class name).
+  * `Automation/FocusMonitor` — UIA focus-changed events; `Services/AssistantController`
+    filters each focused element via `AppCatalog` + `SensitiveFieldPolicy`
+    (`IsPassword`, control type, names) *before* reading any text, then polls the
+    focused control's text (≈400 ms) to detect edits — never keystrokes.
   * `Automation/TextControlAccessor` — reads text via `TextPattern`
     (Word, Outlook, new Notepad, WhatsApp/WebView2) or `ValuePattern`
     (classic Edit), large documents use the *visible* range only; maps
@@ -401,10 +402,12 @@ statically), host access `<all_urls>` for editors + backend. No `scripting`,
     (`WS_EX_TRANSPARENT|WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW`),
     DPI-aware squiggles.
   * `Overlay/SuggestionPopup` — non-activating window so the host app keeps
-    focus and caret; Accept / Ignore / Add to dictionary / alternatives.
-  * `Views/AssistantWindow` — all issues + Rewrite (style chips) for the
-    current field; `Views/EditorWindow` — built-in editor with inline
-    highlights for apps whose UIA support is too weak; `Views/SettingsWindow`.
+    focus and caret; Accept / Ignore / Add to dictionary / Turn off rule.
+  * `Overlay/AssistantWindow` (hosting `Controls/AssistantPanel`) — all issues +
+    Rewrite (style chips) for the current field, also non-activating;
+    `Views/EditorWindow` — built-in editor (TextBox + squiggle adorner) for apps
+    whose UIA support is too weak; `Views/SettingsWindow`.
+  * `Services/HotkeyService` — Ctrl+Alt+W via `RegisterHotKey` (not a hook).
   * Tray: enable/disable, pause 30 min, per-app toggle, sign-in, quit.
 
 **App compatibility matrix** (initial)
@@ -422,16 +425,19 @@ statically), host access `<all_urls>` for editors + backend. No `scripting`,
 
 ## 9. Development milestones
 
-| Milestone | Scope | Exit criteria |
-|-----------|-------|---------------|
-| **M0 Foundations** | Repo layout, docs, LanguageTool via Maven, docker-compose, CI skeleton | LT answers `/v2/check` locally |
-| **M1 Backend platform** | Config, DB models, Alembic, auth (argon2/JWT/refresh rotation), settings, dictionary, feedback, usage, export/delete, rate limits, logging | pytest green against PostgreSQL |
-| **M2 Intelligence engine** | LT client, profiles, WriteMind rules, offsets, segmentation + cache, protection, merge, AI provider + diff-to-edits + meaning guard + redaction, rewrite engine with offline fallback, `/check` `/rewrite` | Engine tests green against real LT; accuracy fixture set passes; p50 fast-check < 250 ms |
-| **M3 Chrome extension** | Sensitive policy, text maps, adapters, apply pipeline, store/rebase, overlay, React UI, background, popup, options | vitest green; Playwright e2e on textarea / contenteditable / Lexical-style / password pages against the real backend |
-| **M4 Windows app** | Core library + tests, UIA layer, overlay, popup, assistant, editor, settings, tray | Core tests green; WPF app builds; Windows CI job builds + tests |
-| **M5 Hardening & release** | Security review, perf pass, packaging (extension zip, Windows publish), docs | All suites green; release artefacts produced |
+| Milestone | Scope | Status / evidence |
+|-----------|-------|-------------------|
+| **M0 Foundations** | Repo layout, docs, LanguageTool via Maven, scripts | ✅ LanguageTool 6.8 answers `/v2/check` locally |
+| **M1 Backend platform** | Config, models, Alembic, auth (argon2/JWT/refresh rotation), settings, dictionary, feedback, usage, export/delete, rate limits, logging | ✅ pytest green against PostgreSQL; migration tested up/down/up |
+| **M2 Intelligence engine** | LT client, profiles, rules, offsets, segmentation + cache, protection, merge, AI provider + diff-to-edits + meaning guard + redaction, rewrite with offline fallback | ✅ accuracy fixture 42/42 detected, 0/23 false positives; HTTP p50 52 ms |
+| **M3 Chrome extension** | Sensitive policy, text maps, adapters, apply pipeline, store/rebase, overlay, React UI, background, popup, options | ✅ 59 vitest + 7 Playwright e2e in real Chromium against the live API |
+| **M4 Windows app** | Core library + tests, UIA layer, overlay, popup, assistant, editor, settings, tray, hotkey | ✅ 51 xUnit tests (incl. live API); WPF builds warning-free; single-file publish |
+| **M5 Hardening & release** | Security pass, CI, packaging, docs | ✅ CI (backend, extension + e2e, Windows); extension zip; `WriteMind.exe`; docs |
 
----
+**Next steps** toward a commercial launch: Chrome Web Store listing and a pinned extension ID; Windows
+code signing + MSIX/installer; interactive QA of the UIA layer across Word/Outlook/Notepad/WhatsApp
+builds; a shared rate limiter for multi-replica deployments; billing for premium plans; more languages
+in WriteMind rules and the offline rewrite engine.
 
 ## 10. Dependencies & setup
 

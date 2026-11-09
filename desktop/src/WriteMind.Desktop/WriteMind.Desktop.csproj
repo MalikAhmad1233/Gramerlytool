@@ -23,6 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\writemind.png" />
-    <Content Include="Assets\writemind.ico" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="Assets\writemind.ico" LogicalName="WriteMind.Desktop.writemind.ico" />
   </ItemGroup>
 </Project>

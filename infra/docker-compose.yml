@@ -1,0 +1,38 @@
+# Full WriteMind backend stack: docker compose -f infra/docker-compose.yml up --build
+name: writemind
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: writemind
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-writemind}
+      POSTGRES_DB: writemind
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U writemind"]
+      interval: 5s
+      retries: 20
+
+  languagetool:
+    build: ./languagetool
+    environment:
+      JAVA_OPTS: "-Xms256m -Xmx1500m"
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/backend.Dockerfile
+    depends_on:
+      postgres: { condition: service_healthy }
+      languagetool: { condition: service_healthy }
+    environment:
+      WRITEMIND_ENVIRONMENT: ${WRITEMIND_ENVIRONMENT:-development}
+      WRITEMIND_DATABASE_URL: postgresql+asyncpg://writemind:${POSTGRES_PASSWORD:-writemind}@postgres:5432/writemind
+      WRITEMIND_LANGUAGETOOL_URL: http://languagetool:8081
+      WRITEMIND_JWT_SECRET: ${WRITEMIND_JWT_SECRET:-dev-only-insecure-jwt-secret-change-me-0123456789}
+      WRITEMIND_TRUST_PROXY_HEADERS: ${WRITEMIND_TRUST_PROXY_HEADERS:-false}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports: ["8000:8000"]
+
+volumes:
+  pgdata:

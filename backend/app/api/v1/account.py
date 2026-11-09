@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Query, Request, Response, status
+from fastapi import APIRouter, Depends, Query, Request, Response, status
 from fastapi.responses import JSONResponse
 
-from app.api.deps import CurrentUser, DbDep, OptionalUser
+from app.api.deps import CurrentUser, DbDep, OptionalUser, rate_limit
 from app.core import security
 from app.core.errors import AppError
 from app.schemas.account import (
@@ -19,7 +19,7 @@ from app.schemas.account import (
 from app.schemas.auth import DeleteAccountRequest, UserOut
 from app.services import accounts, usage
 
-router = APIRouter(tags=["account"])
+router = APIRouter(tags=["account"], dependencies=[Depends(rate_limit("account"))])
 
 
 @router.get("/me", response_model=UserOut)
@@ -84,7 +84,12 @@ async def remove_dictionary_word(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/feedback", status_code=status.HTTP_202_ACCEPTED, tags=["feedback"])
+@router.post(
+    "/feedback",
+    status_code=status.HTTP_202_ACCEPTED,
+    tags=["feedback"],
+    dependencies=[Depends(rate_limit("feedback"))],
+)
 async def feedback(body: FeedbackBatch, user: OptionalUser, db: DbDep) -> dict[str, int]:
     await usage.store_feedback(db, user.id if user else None, body)
     return {"accepted": len(body.events)}

@@ -161,3 +161,23 @@ async def test_delete_account_requires_password_and_cascades(client, app):
     assert (await client.get("/v1/me", headers=auth)).status_code == 401
     refresh = await client.post("/v1/auth/refresh", json={"refresh_token": tokens["refresh_token"]})
     assert refresh.status_code == 401
+
+
+async def test_feedback_and_account_routes_are_rate_limited(app_factory):
+    import httpx
+
+    app = await app_factory(rate_feedback_guest=2, rate_account_guest=100)
+    transport = httpx.ASGITransport(app=app, client=("192.0.2.55", 1))
+    event = {"rule_id": "R", "category": "grammar", "source": "ai", "action": "ignored"}
+    async with httpx.AsyncClient(transport=transport, base_url="http://t") as c:
+        codes = [
+            (await c.post("/v1/feedback", json={"client": "web", "events": [event]})).status_code
+            for _ in range(3)
+        ]
+        assert codes == [202, 202, 429]
+
+    app = await app_factory(rate_account_guest=2)
+    transport = httpx.ASGITransport(app=app, client=("192.0.2.56", 1))
+    async with httpx.AsyncClient(transport=transport, base_url="http://t") as c:
+        codes = [(await c.get("/v1/settings")).status_code for _ in range(3)]
+        assert codes == [401, 401, 429]

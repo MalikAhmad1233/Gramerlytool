@@ -63,6 +63,10 @@ class Settings(BaseSettings):
     rate_rewrite_guest: int = 10
     rate_rewrite_user: int = 60
     rate_auth: int = 20
+    rate_feedback_guest: int = 60
+    rate_feedback_user: int = 240
+    rate_account_guest: int = 30
+    rate_account_user: int = 240
 
     # --- HTTP -----------------------------------------------------------------
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
