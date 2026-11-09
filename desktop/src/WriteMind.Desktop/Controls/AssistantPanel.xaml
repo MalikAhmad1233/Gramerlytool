@@ -1,0 +1,68 @@
+<UserControl x:Class="WriteMind.Desktop.Controls.AssistantPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel Background="{StaticResource BgBrush}">
+        <!-- Header -->
+        <Border DockPanel.Dock="Top" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="16,14,12,10">
+            <DockPanel>
+                <Button x:Name="CloseButton" DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="×" ToolTip="Close"
+                        Click="OnClose" VerticalAlignment="Top" />
+                <StackPanel x:Name="ScorePanel" DockPanel.Dock="Right" Margin="12,0" Visibility="Collapsed" ToolTip="Writing score">
+                    <TextBlock x:Name="ScoreText" FontSize="20" FontWeight="Bold" HorizontalAlignment="Right" Foreground="{StaticResource FgBrush}" />
+                    <TextBlock Text="score" Style="{StaticResource ChipLabel}" HorizontalAlignment="Right" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="WriteMind AI" FontSize="15" FontWeight="Bold" Foreground="{StaticResource FgBrush}" />
+                    <TextBlock Text="Detect Instantly. Suggest Intelligently. Let Users Decide." Style="{StaticResource MutedText}" FontSize="11" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Footer: writing style -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Padding="14,10,14,6">
+            <StackPanel>
+                <TextBlock Text="Writing style" Style="{StaticResource ChipLabel}" Margin="0,0,0,6" />
+                <WrapPanel x:Name="StylePicker" />
+            </StackPanel>
+        </Border>
+
+        <!-- Tabs -->
+        <WrapPanel DockPanel.Dock="Top" Margin="12,10,12,0">
+            <RadioButton x:Name="IssuesTab" Style="{StaticResource TabButton}" GroupName="tabs" IsChecked="True" Checked="OnTabChanged">
+                <TextBlock x:Name="IssuesTabText" Text="Suggestions" />
+            </RadioButton>
+            <RadioButton x:Name="RewriteTab" Style="{StaticResource TabButton}" GroupName="tabs" Content="Rewrite" Checked="OnTabChanged" />
+        </WrapPanel>
+
+        <Grid Margin="12,4,12,8">
+            <!-- Suggestions -->
+            <ScrollViewer x:Name="IssuesView" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock x:Name="Summary" Style="{StaticResource MutedText}" Margin="2,4,0,6" FontSize="11" />
+                    <StackPanel x:Name="IssueList" />
+                    <StackPanel x:Name="EmptyState" Margin="12,32" Visibility="Collapsed" HorizontalAlignment="Center">
+                        <TextBlock Text="Looking good ✨" Style="{StaticResource TitleText}" HorizontalAlignment="Center" FontSize="15" />
+                        <TextBlock Text="No suggestions right now. WriteMind checks as you type." Style="{StaticResource MutedText}"
+                                   TextAlignment="Center" Margin="0,4,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Rewrite -->
+            <ScrollViewer x:Name="RewriteView" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="2,6,2,0">
+                    <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="3,0,0,0" Padding="10,6" Margin="0,0,0,10">
+                        <TextBlock x:Name="RewriteSource" Style="{StaticResource MutedText}" MaxHeight="120" />
+                    </Border>
+                    <WrapPanel x:Name="RewriteStyles" />
+                    <WrapPanel Margin="0,4,0,0">
+                        <Button x:Name="GenerateButton" Style="{StaticResource PrimaryButton}" Content="Suggest alternatives" Click="OnGenerate" />
+                        <Button Style="{StaticResource GhostButton}" Content="Use current selection" Click="OnUseSelection" />
+                    </WrapPanel>
+                    <TextBlock x:Name="RewriteMessage" Style="{StaticResource MutedText}" Margin="0,6,0,0" Visibility="Collapsed" />
+                    <StackPanel x:Name="Alternatives" Margin="0,6,0,0" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</UserControl>

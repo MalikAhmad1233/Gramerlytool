@@ -1,0 +1,148 @@
+<Window x:Class="WriteMind.Desktop.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WriteMind AI — Settings" Width="720" Height="640" MinWidth="560" MinHeight="480"
+        Background="{StaticResource SoftBrush}" FontFamily="{StaticResource UiFont}"
+        WindowStartupLocation="CenterScreen" Icon="/Assets/writemind.png">
+    <DockPanel Margin="20">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,16">
+            <Image Source="/Assets/writemind.png" Width="44" Height="44" Margin="0,0,12,0" />
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="WriteMind AI" FontSize="20" FontWeight="Bold" Foreground="{StaticResource FgBrush}" />
+                <TextBlock Text="Detect Instantly. Suggest Intelligently. Let Users Decide." Style="{StaticResource MutedText}" />
+            </StackPanel>
+        </StackPanel>
+
+        <TabControl BorderThickness="0" Background="Transparent">
+            <TabItem Header="Account">
+                <StackPanel Margin="4,12">
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel>
+                            <StackPanel x:Name="SignedOutPanel">
+                                <TextBlock Text="Sign in (optional)" Style="{StaticResource TitleText}" />
+                                <TextBlock Style="{StaticResource MutedText}" Margin="0,2,0,12"
+                                           Text="Sync your dictionary and preferences with the Chrome extension. Checking works without an account." />
+                                <TextBlock Text="E-mail" Style="{StaticResource ChipLabel}" />
+                                <TextBox x:Name="EmailBox" Style="{StaticResource FieldBox}" />
+                                <TextBlock Text="Password" Style="{StaticResource ChipLabel}" />
+                                <PasswordBox x:Name="PasswordBox" Padding="8,6" Margin="0,0,0,8" />
+                                <TextBlock Text="Name (for new accounts)" Style="{StaticResource ChipLabel}" />
+                                <TextBox x:Name="NameBox" Style="{StaticResource FieldBox}" />
+                                <WrapPanel>
+                                    <Button Style="{StaticResource PrimaryButton}" Content="Sign in" Click="OnSignIn" />
+                                    <Button Style="{StaticResource SecondaryButton}" Content="Create account" Click="OnRegister" />
+                                </WrapPanel>
+                            </StackPanel>
+                            <StackPanel x:Name="SignedInPanel" Visibility="Collapsed">
+                                <TextBlock x:Name="UserText" Style="{StaticResource TitleText}" />
+                                <TextBlock x:Name="UserDetail" Style="{StaticResource MutedText}" Margin="0,2,0,12" />
+                                <WrapPanel>
+                                    <Button Style="{StaticResource SecondaryButton}" Content="Sync now" Click="OnSync" />
+                                    <Button Style="{StaticResource SecondaryButton}" Content="Sign out" Click="OnSignOut" />
+                                </WrapPanel>
+                            </StackPanel>
+                            <TextBlock x:Name="AccountMessage" Style="{StaticResource MutedText}" Margin="0,6,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource CardBorder}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Connection" Style="{StaticResource TitleText}" />
+                            <TextBlock Style="{StaticResource MutedText}" Margin="0,2,0,8" Text="Address of the WriteMind API." />
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Save &amp; test" Click="OnSaveUrl" Margin="8,0,0,8" />
+                                <TextBox x:Name="ApiUrlBox" Style="{StaticResource FieldBox}" />
+                            </DockPanel>
+                            <TextBlock x:Name="ConnectionText" Style="{StaticResource MutedText}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Writing">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="4,12">
+                        <Border Style="{StaticResource CardBorder}">
+                            <StackPanel>
+                                <TextBlock Text="Language" Style="{StaticResource TitleText}" />
+                                <ComboBox x:Name="LanguageBox" Margin="0,8,0,12" SelectionChanged="OnLanguageChanged" />
+                                <TextBlock Text="Default writing style" Style="{StaticResource TitleText}" />
+                                <WrapPanel x:Name="StyleChips" Margin="0,8,0,4" />
+                                <TextBlock Style="{StaticResource MutedText}" FontSize="12"
+                                           Text="Formal flags contractions and informal words. Messaging apps such as WhatsApp are checked casually unless you choose Professional or Formal." />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource CardBorder}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Check for" Style="{StaticResource TitleText}" />
+                                <WrapPanel x:Name="CategoryChecks" Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource CardBorder}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <CheckBox x:Name="AiCheck" Content="AI contextual suggestions and rewrites" Checked="OnTogglesChanged" Unchecked="OnTogglesChanged" />
+                                <TextBlock Style="{StaticResource MutedText}" FontSize="12" Margin="20,2,0,8"
+                                           Text="Personal data (e-mails, phone and card numbers, links) is masked before any text reaches the AI model." />
+                                <CheckBox x:Name="UnderlineCheck" Content="Underline issues in other apps" Checked="OnTogglesChanged" Unchecked="OnTogglesChanged" Margin="0,0,0,6" />
+                                <CheckBox x:Name="StartupCheck" Content="Start WriteMind when I sign in to Windows" Checked="OnTogglesChanged" Unchecked="OnTogglesChanged" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource CardBorder}" Margin="0,12,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Turned-off rules" Style="{StaticResource TitleText}" />
+                                <WrapPanel x:Name="RuleList" Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Apps">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="4,12">
+                        <Border Style="{StaticResource CardBorder}">
+                            <StackPanel>
+                                <TextBlock Text="Where WriteMind helps" Style="{StaticResource TitleText}" />
+                                <TextBlock Style="{StaticResource MutedText}" Margin="0,2,0,8"
+                                           Text="Browsers are handled by the WriteMind Chrome extension. Password managers, terminals, remote desktops and code editors are never read." />
+                                <StackPanel x:Name="AppList" />
+                                <CheckBox x:Name="GenericAppsCheck" Content="Other apps with editable text" Margin="0,8,0,0"
+                                          Checked="OnTogglesChanged" Unchecked="OnTogglesChanged" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Dictionary">
+                <StackPanel Margin="4,12">
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel>
+                            <TextBlock Text="Personal dictionary" Style="{StaticResource TitleText}" />
+                            <TextBlock Style="{StaticResource MutedText}" Margin="0,2,0,8" Text="Words WriteMind should never flag as misspelled." />
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Add" Click="OnAddWord" Margin="8,0,0,8" />
+                                <TextBox x:Name="WordBox" Style="{StaticResource FieldBox}" />
+                            </DockPanel>
+                            <WrapPanel x:Name="WordList" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Privacy">
+                <StackPanel Margin="4,12">
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel>
+                            <TextBlock Text="How WriteMind protects your writing" Style="{StaticResource TitleText}" Margin="0,0,0,8" />
+                            <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• Your text is never changed unless you click Accept or Replace." />
+                            <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• No keystroke logging: WriteMind reads the focused field's text through Windows UI Automation — it installs no keyboard hooks." />
+                            <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• Password and sensitive fields, password managers and terminals are never read." />
+                            <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• Text is processed in memory by the WriteMind service and is not stored. Only anonymous counters are kept." />
+                            <TextBlock Style="{StaticResource BodyText}" Text="• Your sign-in is encrypted on this PC with Windows Data Protection." />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

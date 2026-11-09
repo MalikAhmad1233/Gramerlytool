@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>WriteMind.Core</RootNamespace>
+    <!-- CA1848/CA1873: logging perf hints not relevant (no ILogger use). CA2007: no ConfigureAwait noise in app code. -->
+    <NoWarn>$(NoWarn);CA1848;CA1873;CA2007;CA1031;CA1054;CA1056;CA1002;CA2227;CA1819</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="WriteMind.Core.Tests" />
+  </ItemGroup>
+</Project>

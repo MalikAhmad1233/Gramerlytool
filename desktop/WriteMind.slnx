@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WriteMind.Core/WriteMind.Core.csproj" />
+    <Project Path="src/WriteMind.Desktop/WriteMind.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WriteMind.Core.Tests/WriteMind.Core.Tests.csproj" />
+  </Folder>
+</Solution>

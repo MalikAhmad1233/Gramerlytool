@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the system-tray NotifyIcon. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>WriteMind</AssemblyName>
+    <RootNamespace>WriteMind.Desktop</RootNamespace>
+    <ApplicationIcon>Assets\writemind.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <NoWarn>$(NoWarn);CA1848;CA1873;CA2007;CA1031;CA1001;CA1515;CA1416;CA1859;CA1822;CA1305;CA1310;CA1307;CA1862;CA1054;CA1056;CA5392;CA1812;CA2000;WFO0003</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Avoid WPF/WinForms type-name clashes (MessageBox, Application, ...). -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WriteMind.Core\WriteMind.Core.csproj" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\writemind.png" />
+    <Content Include="Assets\writemind.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
