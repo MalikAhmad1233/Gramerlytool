@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Node / WXT
+node_modules/
+.output/
+.wxt/
+extension/stats.html
+extension/test-results/
+extension/playwright-report/
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# LanguageTool runtime (fetched from Maven Central by scripts/fetch-languagetool.sh)
+infra/languagetool/lib/
+infra/languagetool/target/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
