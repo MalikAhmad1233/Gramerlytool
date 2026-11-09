@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Model-owning editor test</title>
+<style>body { font: 16px/1.5 Arial, sans-serif; margin: 40px; } #me { border: 1px solid #ccc; padding: 12px; width: 640px; min-height: 80px; }</style>
+</head>
+<body>
+  <!-- Mimics Lexical/ProseMirror: the editor owns a text model, handles beforeinput/paste itself,
+       re-renders its DOM from the model, and reconciles DOM changes it did not make. -->
+  <div id="me" contenteditable="true" role="textbox"></div>
+  <script>
+    const ed = document.getElementById('me');
+    window.__model = 'Please send me teh report today.';
+    let pending = false;
+    function render(caret) {
+      ed.innerHTML = '';
+      const p = document.createElement('p');
+      p.style.margin = '0';
+      p.textContent = window.__model;
+      if (!window.__model) p.appendChild(document.createElement('br'));
+      ed.appendChild(p);
+      if (caret != null && p.firstChild && p.firstChild.nodeType === 3) {
+        const r = document.createRange();
+        r.setStart(p.firstChild, Math.min(caret, p.firstChild.length));
+        r.collapse(true);
+        getSelection().removeAllRanges();
+        getSelection().addRange(r);
+      }
+    }
+    function selOffsets() {
+      const r = getSelection().getRangeAt(0);
+      const pre = document.createRange();
+      pre.selectNodeContents(ed);
+      pre.setEnd(r.startContainer, r.startOffset);
+      const s = pre.toString().length;
+      return [s, s + r.toString().length];
+    }
+    function insert(data) {
+      const [s, e] = selOffsets();
+      window.__model = window.__model.slice(0, s) + data + window.__model.slice(e);
+      pending = true;
+      render(s + data.length);
+      queueMicrotask(() => (pending = false));
+    }
+    ed.addEventListener('beforeinput', (e) => {
+      if (['insertText', 'insertReplacementText'].includes(e.inputType)) { e.preventDefault(); insert(e.data || ''); }
+      else if (e.inputType === 'deleteContentBackward') {
+        e.preventDefault();
+        const [s, en] = selOffsets();
+        const from = s === en ? Math.max(0, s - 1) : s;
+        window.__model = window.__model.slice(0, from) + window.__model.slice(en);
+        render(from);
+      }
+    });
+    ed.addEventListener('paste', (e) => { e.preventDefault(); insert(e.clipboardData.getData('text/plain')); });
+    // Reconcile changes made directly to the DOM (e.g. execCommand), like Lexical's mutation listener.
+    new MutationObserver(() => { if (!pending) window.__model = ed.innerText.replace(/\n$/, ''); })
+      .observe(ed, { childList: true, characterData: true, subtree: true });
+    render();
+  </script>
+</body>
+</html>
