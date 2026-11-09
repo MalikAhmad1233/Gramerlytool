@@ -1,0 +1,110 @@
+{
+  "request": {
+    "text": "Hi 👋 She go to school and I recieved teh files.\n\nPlease send me you feedback.",
+    "language": "en-US",
+    "style": "neutral",
+    "mode": "fast"
+  },
+  "response": {
+    "text_hash": "f636dd08af08bfda001c7e76a8493381",
+    "language": "en-US",
+    "style": "neutral",
+    "mode": "fast",
+    "suggestions": [
+      {
+        "id": "s_2bf795069f52",
+        "fingerprint": "cfbec3731543ac04",
+        "offset": 10,
+        "length": 2,
+        "original": "go",
+        "replacements": [
+          "goes",
+          "went"
+        ],
+        "category": "grammar",
+        "severity": "error",
+        "title": "Agreement error",
+        "message": "The pronoun ‘She’ is usually used with a third-person or a past tense verb.",
+        "rule_id": "HE_VERB_AGR",
+        "source": "languagetool",
+        "confidence": 0.85
+      },
+      {
+        "id": "s_12f79e1e9c28",
+        "fingerprint": "adecc9046c2a5107",
+        "offset": 29,
+        "length": 8,
+        "original": "recieved",
+        "replacements": [
+          "received",
+          "relieved"
+        ],
+        "category": "spelling",
+        "severity": "error",
+        "title": "Spelling mistake",
+        "message": "Possible spelling mistake found.",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "source": "languagetool",
+        "confidence": 0.9
+      },
+      {
+        "id": "s_e5802801fe20",
+        "fingerprint": "c87f05fb097bfbbd",
+        "offset": 38,
+        "length": 3,
+        "original": "teh",
+        "replacements": [
+          "the",
+          "ten",
+          "tea",
+          "tech",
+          "Ted"
+        ],
+        "category": "spelling",
+        "severity": "error",
+        "title": "Spelling mistake",
+        "message": "Possible spelling mistake found.",
+        "rule_id": "MORFOLOGIK_RULE_EN_US",
+        "source": "languagetool",
+        "confidence": 0.9
+      },
+      {
+        "id": "s_d31d97b8e2b3",
+        "fingerprint": "baddc6d28877a511",
+        "offset": 65,
+        "length": 3,
+        "original": "you",
+        "replacements": [
+          "your"
+        ],
+        "category": "grammar",
+        "severity": "error",
+        "title": "Possessive pronoun",
+        "message": "Use the possessive “your” before “feedback”.",
+        "rule_id": "WM_POSSESSIVE_YOUR",
+        "source": "writemind",
+        "confidence": 0.88
+      }
+    ],
+    "stats": {
+      "characters": 77,
+      "words": 15,
+      "sentences": 2,
+      "issues": {
+        "grammar": 2,
+        "spelling": 2,
+        "punctuation": 0,
+        "style": 0,
+        "clarity": 0
+      },
+      "score": 34
+    },
+    "engine": {
+      "languagetool": "ok",
+      "ai": "unavailable",
+      "paragraphs_checked": 2,
+      "paragraphs_cached": 0,
+      "latency_ms": 42.0
+    }
+  }
+}

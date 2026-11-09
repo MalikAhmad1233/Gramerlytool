@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Query, Response, status
+from fastapi import APIRouter, Query, Request, Response, status
 from fastapi.responses import JSONResponse
 
 from app.api.deps import CurrentUser, DbDep, OptionalUser
@@ -49,8 +49,12 @@ async def get_settings(user: CurrentUser, db: DbDep) -> SettingsOut:
 
 
 @router.put("/settings", response_model=SettingsOut, tags=["settings"])
-async def put_settings(body: SettingsUpdate, user: CurrentUser, db: DbDep) -> SettingsOut:
-    return await accounts.update_settings(db, user.id, body)
+async def put_settings(
+    body: SettingsUpdate, user: CurrentUser, db: DbDep, request: Request
+) -> SettingsOut:
+    result = await accounts.update_settings(db, user.id, body)
+    request.app.state.user_contexts.invalidate(user.id)
+    return result
 
 
 @router.get("/dictionary", response_model=DictionaryOut, tags=["dictionary"])
@@ -61,16 +65,20 @@ async def get_dictionary(user: CurrentUser, db: DbDep) -> DictionaryOut:
 
 @router.post("/dictionary", response_model=DictionaryOut, tags=["dictionary"])
 async def add_dictionary_word(
-    body: DictionaryWord, user: CurrentUser, db: DbDep, response: Response
+    body: DictionaryWord, user: CurrentUser, db: DbDep, response: Response, request: Request
 ) -> DictionaryOut:
     inserted = await accounts.add_word(db, user.id, body.word)
+    request.app.state.user_contexts.invalidate(user.id)
     response.status_code = status.HTTP_201_CREATED if inserted else status.HTTP_200_OK
     words = await accounts.list_words(db, user.id)
     return DictionaryOut(words=words, count=len(words), limit=accounts.DICTIONARY_LIMIT)
 
 
 @router.delete("/dictionary/{word}", status_code=status.HTTP_204_NO_CONTENT, tags=["dictionary"])
-async def remove_dictionary_word(word: str, user: CurrentUser, db: DbDep) -> Response:
+async def remove_dictionary_word(
+    word: str, user: CurrentUser, db: DbDep, request: Request
+) -> Response:
+    request.app.state.user_contexts.invalidate(user.id)
     if not await accounts.remove_word(db, user.id, word):
         raise AppError(404, "not_found", "Word is not in your dictionary.")
     return Response(status_code=status.HTTP_204_NO_CONTENT)

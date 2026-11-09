@@ -1,0 +1,23 @@
+{
+  "request": {
+    "text": "hey can u send me the report asap",
+    "style": "formal",
+    "count": 2
+  },
+  "response": {
+    "style": "formal",
+    "alternatives": [
+      {
+        "text": "Hello, can you send me the report as soon as possible?",
+        "source": "rules",
+        "meaning_preserved": true,
+        "notes": [
+          "1 correction(s) applied",
+          "Adjusted for a formal tone"
+        ]
+      }
+    ],
+    "engine": "rules",
+    "latency_ms": 12.0
+  }
+}

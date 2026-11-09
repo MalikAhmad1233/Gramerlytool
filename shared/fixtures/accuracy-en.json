@@ -1,0 +1,252 @@
+{
+  "description": "WriteMind grammar-accuracy fixture (en-US). Each error case must produce a suggestion whose span equals `original` and whose replacements include `replacement`. Clean cases must produce no suggestions (neutral style). `ai_only` cases need the AI contextual layer and are not asserted against LanguageTool.",
+  "errors": [
+    {
+      "text": "She go to school every day.",
+      "original": "go",
+      "replacement": "goes"
+    },
+    {
+      "text": "He don't like coffee.",
+      "original": "do",
+      "replacement": "does"
+    },
+    {
+      "text": "I recieved your message.",
+      "original": "recieved",
+      "replacement": "received"
+    },
+    {
+      "text": "Their going to the park later.",
+      "original": "Their",
+      "replacement": "They're"
+    },
+    {
+      "text": "I could of helped you.",
+      "original": "could of",
+      "replacement": "could have"
+    },
+    {
+      "text": "The team have finished it's work.",
+      "original": "it's",
+      "replacement": "its"
+    },
+    {
+      "text": "This is a apple.",
+      "original": "a",
+      "replacement": "an"
+    },
+    {
+      "text": "We was waiting for an hour.",
+      "original": "was",
+      "replacement": "were"
+    },
+    {
+      "text": "I seen the movie yesterday.",
+      "original": "seen",
+      "replacement": "saw"
+    },
+    {
+      "text": "Me and him went to the store.",
+      "original": "Me",
+      "replacement": "I"
+    },
+    {
+      "text": "Please send me the the report.",
+      "original": "the the",
+      "replacement": "the"
+    },
+    {
+      "text": "I definately agree with you.",
+      "original": "definately",
+      "replacement": "definitely"
+    },
+    {
+      "text": "Lets meet tomorrow.",
+      "original": "Lets",
+      "replacement": "Let's"
+    },
+    {
+      "text": "It was more better than before.",
+      "original": "more better",
+      "replacement": "better"
+    },
+    {
+      "text": "The meeting is on monday.",
+      "original": "monday",
+      "replacement": "Monday"
+    },
+    {
+      "text": "I am looking forward to hear from you.",
+      "original": "to hear",
+      "replacement": "to hearing"
+    },
+    {
+      "text": "She is more taller than me.",
+      "original": "more taller",
+      "replacement": "taller"
+    },
+    {
+      "text": "i will call you later.",
+      "original": "i",
+      "replacement": "I"
+    },
+    {
+      "text": "There is many reasons to stay.",
+      "original": "There is many reasons",
+      "replacement": "There are many reasons"
+    },
+    {
+      "text": "He has went home already.",
+      "original": "went",
+      "replacement": "gone"
+    },
+    {
+      "text": "I need to buy alot of things.",
+      "original": "alot",
+      "replacement": "a lot"
+    },
+    {
+      "text": "Its a beautiful day.",
+      "original": "Its",
+      "replacement": "It's"
+    },
+    {
+      "text": "Your welcome to join us.",
+      "original": "Your",
+      "replacement": "You're"
+    },
+    {
+      "text": "She is taller then her sister.",
+      "original": "taller then",
+      "replacement": "taller than"
+    },
+    {
+      "text": "I have less friends than you.",
+      "original": "less",
+      "replacement": "fewer"
+    },
+    {
+      "text": "Thank you for you help.",
+      "original": "you",
+      "replacement": "your"
+    },
+    {
+      "text": "We should of left earlier.",
+      "original": "should of",
+      "replacement": "should have"
+    },
+    {
+      "text": "He did not went to school.",
+      "original": "went",
+      "replacement": "go"
+    },
+    {
+      "text": "I want to apologize for the delay , it won't happen again.",
+      "original": " ,",
+      "replacement": ","
+    },
+    {
+      "text": "Can you send it untill Friday?",
+      "original": "untill",
+      "replacement": "until"
+    },
+    {
+      "text": "They was very happy.",
+      "original": "was",
+      "replacement": "were"
+    },
+    {
+      "text": "Everyone have a different opinion.",
+      "original": "have",
+      "replacement": "has"
+    },
+    {
+      "text": "I am agree with your proposal.",
+      "original": "am agree",
+      "replacement": "agree"
+    },
+    {
+      "text": "She dont know the answer.",
+      "original": "dont",
+      "replacement": "don't"
+    },
+    {
+      "text": "This are my friends.",
+      "original": "are",
+      "replacement": "is"
+    },
+    {
+      "text": "I'm going too the store.",
+      "original": "too the",
+      "replacement": "to the"
+    },
+    {
+      "text": "The datas are ready.",
+      "original": "datas",
+      "replacement": "data"
+    },
+    {
+      "text": "He go to work by bus every morning.",
+      "original": "go",
+      "replacement": "goes"
+    },
+    {
+      "text": "Who's book is this?",
+      "original": "Who's",
+      "replacement": "Whose"
+    },
+    {
+      "text": "Nobody know the answer yet.",
+      "original": "know",
+      "replacement": "knows"
+    },
+    {
+      "text": "Please send me you feedback by Friday.",
+      "original": "you",
+      "replacement": "your"
+    },
+    {
+      "text": "Let me know you thoughts on the draft.",
+      "original": "you",
+      "replacement": "your"
+    }
+  ],
+  "clean": [
+    "Thanks for the update; I'll review the document this afternoon.",
+    "Could you please send me the latest version of the report?",
+    "We're meeting with the client on Tuesday at 3 p.m. to discuss the proposal.",
+    "Let me know if you have any questions.",
+    "The quick brown fox jumps over the lazy dog.",
+    "I've attached the invoice for October.",
+    "She has been working at the company since 2019.",
+    "Please find the summary below.",
+    "Happy birthday! Hope you have a wonderful day.",
+    "Our new office is located in downtown Toronto.",
+    "Can we reschedule our call to next week?",
+    "I appreciate your help with the presentation.",
+    "Does everyone have a copy of the agenda?",
+    "Let everyone know that the deadline moved.",
+    "Your welcome package will arrive on Monday.",
+    "Their going-away party is on Friday.",
+    "Ping me at dev.team@example.com or see https://exmaple.com/teh-docs for details.",
+    "Run `npm instal` again and check C:\\Users\\teh\\logs for errors.",
+    "Great job on the launch 🎉🚀 everyone!",
+    "The API returns JSON over HTTPS.",
+    "Thanks, @johnsmyth! See #roadmap for the plan.",
+    "I will send you feedback tomorrow.",
+    "Can I get you a coffee?"
+  ],
+  "ai_only": [
+    {
+      "text": "The weather effects my mood.",
+      "original": "effects",
+      "replacement": "affects"
+    },
+    {
+      "text": "The weather are nice today.",
+      "original": "are",
+      "replacement": "is"
+    }
+  ]
+}

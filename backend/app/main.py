@@ -9,16 +9,25 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import health
-from app.api.v1 import account, auth, meta
+from app.api.v1 import account, auth, check, meta
 from app.core.config import Settings, get_settings
 from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
 from app.core.rate_limit import RateLimiter
 from app.db.session import Database
+from app.engine.ai.provider import AIProvider, build_provider
+from app.engine.languagetool import LanguageToolClient
+from app.engine.pipeline import Engine
+from app.services.user_context import UserContextCache
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    *,
+    ai_provider: AIProvider | None = None,
+    languagetool: LanguageToolClient | None = None,
+) -> FastAPI:
     settings = settings or get_settings()
     configure_logging(settings.log_level)
 
@@ -27,9 +36,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.settings = settings
         app.state.db = Database(settings)
         app.state.rate_limiter = RateLimiter()
+        app.state.user_contexts = UserContextCache()
+        app.state.languagetool = languagetool or LanguageToolClient(
+            settings.languagetool_url,
+            timeout=settings.languagetool_timeout_seconds,
+            max_concurrency=settings.languagetool_max_concurrency,
+        )
+        app.state.ai_provider = ai_provider or build_provider(settings)
+        app.state.engine = Engine(settings, app.state.languagetool, app.state.ai_provider)
         try:
             yield
         finally:
+            await app.state.languagetool.close()
+            await app.state.ai_provider.aclose()
             await app.state.db.dispose()
 
     app = FastAPI(
@@ -53,7 +72,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(RequestContextMiddleware, max_body_bytes=settings.max_body_bytes)
 
     app.include_router(health.router)
-    for module in (auth, account, meta):
+    for module in (auth, account, check, meta):
         app.include_router(module.router, prefix="/v1")
     return app
 

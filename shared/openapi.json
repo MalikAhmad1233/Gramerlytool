@@ -1,0 +1,1713 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WriteMind AI API",
+    "summary": "Detect Instantly. Suggest Intelligently. Let Users Decide.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Ready",
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Refresh",
+        "operationId": "refresh_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_v1_auth_logout_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Me",
+        "operationId": "me_v1_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Delete Me",
+        "operationId": "delete_me_v1_me_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/export": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "Export Me",
+        "operationId": "export_me_v1_me_export_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/settings": {
+      "get": {
+        "tags": [
+          "account",
+          "settings"
+        ],
+        "summary": "Get Settings",
+        "operationId": "get_settings_v1_settings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsOut"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "account",
+          "settings"
+        ],
+        "summary": "Put Settings",
+        "operationId": "put_settings_v1_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dictionary": {
+      "get": {
+        "tags": [
+          "account",
+          "dictionary"
+        ],
+        "summary": "Get Dictionary",
+        "operationId": "get_dictionary_v1_dictionary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionaryOut"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "account",
+          "dictionary"
+        ],
+        "summary": "Add Dictionary Word",
+        "operationId": "add_dictionary_word_v1_dictionary_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DictionaryWord"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionaryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dictionary/{word}": {
+      "delete": {
+        "tags": [
+          "account",
+          "dictionary"
+        ],
+        "summary": "Remove Dictionary Word",
+        "operationId": "remove_dictionary_word_v1_dictionary__word__delete",
+        "parameters": [
+          {
+            "name": "word",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Word"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/feedback": {
+      "post": {
+        "tags": [
+          "account",
+          "feedback"
+        ],
+        "summary": "Feedback",
+        "operationId": "feedback_v1_feedback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackBatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "type": "object",
+                  "title": "Response Feedback V1 Feedback Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/usage/summary": {
+      "get": {
+        "tags": [
+          "account",
+          "usage"
+        ],
+        "summary": "Usage Summary",
+        "operationId": "usage_summary_v1_usage_summary_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 90,
+              "minimum": 1,
+              "default": 7,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/check": {
+      "post": {
+        "tags": [
+          "intelligence"
+        ],
+        "summary": "Check",
+        "operationId": "check_v1_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/rewrite": {
+      "post": {
+        "tags": [
+          "intelligence"
+        ],
+        "summary": "Rewrite",
+        "operationId": "rewrite_v1_rewrite_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RewriteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RewriteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/meta": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Meta",
+        "operationId": "meta_v1_meta_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Meta V1 Meta Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Category": {
+        "type": "string",
+        "enum": [
+          "grammar",
+          "spelling",
+          "punctuation",
+          "style",
+          "clarity"
+        ],
+        "title": "Category"
+      },
+      "CheckRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en-US",
+              "en-GB",
+              "en-CA",
+              "en-AU",
+              "en-NZ",
+              "en-ZA",
+              "de-DE",
+              "fr",
+              "es",
+              "it",
+              "nl",
+              "pt-PT",
+              "pt-BR"
+            ],
+            "title": "Language",
+            "default": "en-US"
+          },
+          "style": {
+            "$ref": "#/components/schemas/Style",
+            "default": "neutral"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "fast",
+              "full"
+            ],
+            "title": "Mode",
+            "default": "fast"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientContext"
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Category"
+                },
+                "type": "array",
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories"
+          },
+          "dictionary": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 2000,
+            "title": "Dictionary"
+          },
+          "disabled_rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 500,
+            "title": "Disabled Rules"
+          },
+          "ai": {
+            "type": "boolean",
+            "title": "Ai",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "CheckRequest"
+      },
+      "CheckResponse": {
+        "properties": {
+          "text_hash": {
+            "type": "string",
+            "title": "Text Hash"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "style": {
+            "$ref": "#/components/schemas/Style"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "fast",
+              "full"
+            ],
+            "title": "Mode"
+          },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/Suggestion"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/CheckStats"
+          },
+          "engine": {
+            "$ref": "#/components/schemas/EngineInfo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text_hash",
+          "language",
+          "style",
+          "mode",
+          "suggestions",
+          "stats",
+          "engine"
+        ],
+        "title": "CheckResponse"
+      },
+      "CheckStats": {
+        "properties": {
+          "characters": {
+            "type": "integer",
+            "title": "Characters"
+          },
+          "words": {
+            "type": "integer",
+            "title": "Words"
+          },
+          "sentences": {
+            "type": "integer",
+            "title": "Sentences"
+          },
+          "issues": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Issues"
+          },
+          "score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "characters",
+          "words",
+          "sentences",
+          "issues",
+          "score"
+        ],
+        "title": "CheckStats"
+      },
+      "ClientContext": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ClientKind",
+            "default": "api"
+          },
+          "app": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40,
+                "pattern": "^[a-z0-9._-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App"
+          }
+        },
+        "type": "object",
+        "title": "ClientContext"
+      },
+      "ClientKind": {
+        "type": "string",
+        "enum": [
+          "chrome-extension",
+          "windows-desktop",
+          "web",
+          "api"
+        ],
+        "title": "ClientKind"
+      },
+      "DeleteAccountRequest": {
+        "properties": {
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "title": "DeleteAccountRequest"
+      },
+      "DictionaryOut": {
+        "properties": {
+          "words": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Words"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "words",
+          "count",
+          "limit"
+        ],
+        "title": "DictionaryOut"
+      },
+      "DictionaryWord": {
+        "properties": {
+          "word": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Word"
+          }
+        },
+        "type": "object",
+        "required": [
+          "word"
+        ],
+        "title": "DictionaryWord"
+      },
+      "EngineInfo": {
+        "properties": {
+          "languagetool": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "error"
+            ],
+            "title": "Languagetool"
+          },
+          "ai": {
+            "type": "string",
+            "enum": [
+              "used",
+              "skipped",
+              "disabled",
+              "unavailable",
+              "error"
+            ],
+            "title": "Ai"
+          },
+          "paragraphs_checked": {
+            "type": "integer",
+            "title": "Paragraphs Checked"
+          },
+          "paragraphs_cached": {
+            "type": "integer",
+            "title": "Paragraphs Cached"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "languagetool",
+          "ai",
+          "paragraphs_checked",
+          "paragraphs_cached",
+          "latency_ms"
+        ],
+        "title": "EngineInfo"
+      },
+      "FeedbackBatch": {
+        "properties": {
+          "client": {
+            "$ref": "#/components/schemas/ClientKind"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/FeedbackEvent"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client",
+          "events"
+        ],
+        "title": "FeedbackBatch"
+      },
+      "FeedbackEvent": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.:\\-]+$",
+            "title": "Rule Id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "ignored",
+              "rule_disabled",
+              "added_to_dictionary"
+            ],
+            "title": "Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_id",
+          "category",
+          "source",
+          "action"
+        ],
+        "title": "FeedbackEvent"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientKind",
+            "default": "api"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "RefreshRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 20,
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientKind",
+            "default": "api"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "RegisterRequest"
+      },
+      "RewriteAlternative": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "ai",
+              "rules"
+            ],
+            "title": "Source"
+          },
+          "meaning_preserved": {
+            "type": "boolean",
+            "title": "Meaning Preserved"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "source",
+          "meaning_preserved"
+        ],
+        "title": "RewriteAlternative"
+      },
+      "RewriteRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Text"
+          },
+          "style": {
+            "$ref": "#/components/schemas/RewriteStyle",
+            "default": "professional"
+          },
+          "count": {
+            "type": "integer",
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Count",
+            "default": 3
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en-US",
+              "en-GB",
+              "en-CA",
+              "en-AU",
+              "en-NZ",
+              "en-ZA",
+              "de-DE",
+              "fr",
+              "es",
+              "it",
+              "nl",
+              "pt-PT",
+              "pt-BR"
+            ],
+            "title": "Language",
+            "default": "en-US"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientContext"
+          },
+          "ai": {
+            "type": "boolean",
+            "title": "Ai",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "RewriteRequest"
+      },
+      "RewriteResponse": {
+        "properties": {
+          "style": {
+            "$ref": "#/components/schemas/RewriteStyle"
+          },
+          "alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/RewriteAlternative"
+            },
+            "type": "array",
+            "title": "Alternatives"
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "ai",
+              "rules"
+            ],
+            "title": "Engine"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "style",
+          "alternatives",
+          "engine",
+          "latency_ms"
+        ],
+        "title": "RewriteResponse"
+      },
+      "RewriteStyle": {
+        "type": "string",
+        "enum": [
+          "professional",
+          "casual",
+          "formal",
+          "friendly",
+          "concise"
+        ],
+        "title": "RewriteStyle"
+      },
+      "SettingsOut": {
+        "properties": {
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "default_style": {
+            "$ref": "#/components/schemas/Style"
+          },
+          "ai_enabled": {
+            "type": "boolean",
+            "title": "Ai Enabled"
+          },
+          "enabled_categories": {
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            },
+            "type": "array",
+            "title": "Enabled Categories"
+          },
+          "disabled_rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Disabled Rules"
+          },
+          "disabled_sites": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Disabled Sites"
+          },
+          "disabled_apps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Disabled Apps"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "default_style",
+          "ai_enabled",
+          "enabled_categories",
+          "disabled_rules",
+          "disabled_sites",
+          "disabled_apps"
+        ],
+        "title": "SettingsOut"
+      },
+      "SettingsUpdate": {
+        "properties": {
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "default_style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Style"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ai_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Enabled"
+          },
+          "enabled_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Category"
+                },
+                "type": "array",
+                "maxItems": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled Categories"
+          },
+          "disabled_rules": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disabled Rules"
+          },
+          "disabled_sites": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disabled Sites"
+          },
+          "disabled_apps": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disabled Apps"
+          }
+        },
+        "type": "object",
+        "title": "SettingsUpdate",
+        "description": "Partial update: omitted fields keep their current value."
+      },
+      "Severity": {
+        "type": "string",
+        "enum": [
+          "error",
+          "warning",
+          "suggestion"
+        ],
+        "title": "Severity"
+      },
+      "Source": {
+        "type": "string",
+        "enum": [
+          "languagetool",
+          "ai",
+          "writemind"
+        ],
+        "title": "Source"
+      },
+      "Style": {
+        "type": "string",
+        "enum": [
+          "neutral",
+          "professional",
+          "casual",
+          "formal"
+        ],
+        "title": "Style",
+        "description": "Writing register used to tune checking."
+      },
+      "Suggestion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "fingerprint": {
+            "type": "string",
+            "title": "Fingerprint",
+            "description": "Stable across re-checks; use to remember 'ignore'."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Offset",
+            "description": "UTF-16 code units"
+          },
+          "length": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Length",
+            "description": "UTF-16 code units"
+          },
+          "original": {
+            "type": "string",
+            "title": "Original"
+          },
+          "replacements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Replacements"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "fingerprint",
+          "offset",
+          "length",
+          "original",
+          "replacements",
+          "category",
+          "severity",
+          "title",
+          "message",
+          "rule_id",
+          "source",
+          "confidence"
+        ],
+        "title": "Suggestion"
+      },
+      "TokenPair": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token",
+          "expires_in",
+          "user"
+        ],
+        "title": "TokenPair"
+      },
+      "UsageDay": {
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          },
+          "checks": {
+            "type": "integer",
+            "title": "Checks"
+          },
+          "characters": {
+            "type": "integer",
+            "title": "Characters"
+          },
+          "suggestions_shown": {
+            "type": "integer",
+            "title": "Suggestions Shown"
+          },
+          "accepted": {
+            "type": "integer",
+            "title": "Accepted"
+          },
+          "ignored": {
+            "type": "integer",
+            "title": "Ignored"
+          },
+          "rewrites": {
+            "type": "integer",
+            "title": "Rewrites"
+          }
+        },
+        "type": "object",
+        "required": [
+          "day",
+          "checks",
+          "characters",
+          "suggestions_shown",
+          "accepted",
+          "ignored",
+          "rewrites"
+        ],
+        "title": "UsageDay"
+      },
+      "UsageSummary": {
+        "properties": {
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "totals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UsageDay"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "acceptance_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acceptance Rate"
+          },
+          "daily": {
+            "items": {
+              "$ref": "#/components/schemas/UsageDay"
+            },
+            "type": "array",
+            "title": "Daily"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days",
+          "totals",
+          "acceptance_rate",
+          "daily"
+        ],
+        "title": "UsageSummary"
+      },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "plan": {
+            "type": "string",
+            "title": "Plan"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "plan",
+          "created_at"
+        ],
+        "title": "UserOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
