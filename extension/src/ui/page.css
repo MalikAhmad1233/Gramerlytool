@@ -49,3 +49,9 @@ button, input, select { font: inherit; color: inherit; }
 .tag button:hover { background: var(--soft); color: var(--fg); }
 .error { color: var(--danger); font-size: 13px; }
 .success { color: var(--ok); font-size: 13px; }
+.status-card { border-radius: 14px; padding: 14px 16px; display: grid; gap: 8px; border: 1px solid var(--line); background: var(--card); }
+.status-card.on { border: 0; color: #fff; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
+.status-card .host { font-size: 12px; opacity: .8; }
+.status-card .engine { font-size: 12px; opacity: .9; }
+.status-card.on .dot.ok { background: #a7f3d0; }
+.status-card.on .switch input:checked + span { background: rgba(255, 255, 255, .35); }

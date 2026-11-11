@@ -20,8 +20,8 @@ const test = base.extend<{ context: BrowserContext; page: Page }>({
       args: [`--disable-extensions-except=${EXTENSION}`, `--load-extension=${EXTENSION}`],
     });
     if (!context.serviceWorkers().length) await context.waitForEvent('serviceworker');
-    // A fresh install opens the welcome/options tab; wait for it so it cannot hijack a test's navigation.
-    for (let i = 0; i < 50 && !context.pages().some((p) => p.url().includes('options.html')); i++) {
+    // A fresh install opens the welcome tab; wait for it so it cannot hijack a test's navigation.
+    for (let i = 0; i < 50 && !context.pages().some((p) => p.url().includes('welcome.html')); i++) {
       await new Promise((r) => setTimeout(r, 100));
     }
     await use(context);
@@ -299,4 +299,24 @@ test('leftover UI from an older copy is removed, and a failed check is never sho
   });
   // A newer copy starting up (simulated by re-dispatching) shuts the current one down…
   await expect.poll(() => page.locator('writemind-ui:not(#stale)').count()).toBe(0);
+});
+
+test('welcome page: choose British English and try the built-in checker', async ({ context }) => {
+  const extensionId = await withoutServer(context);
+  const welcome = await context.newPage();
+  await welcome.goto(`chrome-extension://${extensionId}/welcome.html`);
+  const results = welcome.getByTestId('demo-results');
+  await expect(results).toContainText('Uncountable noun');
+  const demo = welcome.getByTestId('demo-text');
+  const before = await demo.inputValue();
+  // Nothing changes until a fix is clicked.
+  await welcome.waitForTimeout(500);
+  expect(await demo.inputValue()).toBe(before);
+  await results.getByRole('button', { name: /informations\s+information/ }).click();
+  await expect(demo).toHaveValue(/the information yesterday/);
+
+  await demo.fill('The colour of the organisation logo.');
+  await expect(results).toContainText('British spelling');
+  await welcome.getByTestId('choose-gb').click();
+  await expect(results).toContainText('Looks great');
 });

@@ -40,38 +40,41 @@ export function Popup() {
     void update({ disabledSites: next });
   };
 
+  const british = /^en-(GB|AU|NZ|ZA)$/i.test(settings.language);
+  const active = settings.enabled && (host ? siteOn : true);
+
   return (
-    <div className="stack" style={{ width: 340, padding: 16 }}>
-      <div className="brand">
-        <img src="/icon/48.png" alt="" />
-        <div>
-          <h1>WriteMind AI</h1>
-          <p>Detect Instantly. Suggest Intelligently. Let Users Decide.</p>
+    <div className="stack popup" style={{ width: 340, padding: 16 }}>
+      <div className="row spread">
+        <div className="brand">
+          <img src="/icon/48.png" alt="" />
+          <div>
+            <h1>WriteMind AI</h1>
+            <p>Detect Instantly. Suggest Intelligently. Let Users Decide.</p>
+          </div>
         </div>
+        <label className="switch" title={settings.enabled ? 'Turn WriteMind off everywhere' : 'Turn WriteMind on'}>
+          <input type="checkbox" aria-label="WriteMind enabled" checked={settings.enabled} onChange={(e) => void update({ enabled: e.target.checked })} />
+          <span />
+        </label>
       </div>
 
-      <div className="card stack">
+      <div className={`status-card${active ? ' on' : ''}`}>
         <div className="row spread">
-          <span>WriteMind enabled</span>
-          <label className="switch">
-            <input type="checkbox" checked={settings.enabled} onChange={(e) => void update({ enabled: e.target.checked })} />
-            <span />
-          </label>
-        </div>
-        {host && (
-          <div className="row spread">
-            <span>
-              Check on <b>{host}</b>
-            </span>
-            <label className="switch">
-              <input type="checkbox" checked={siteOn} disabled={!settings.enabled} onChange={toggleSite} />
+          <div>
+            <b>{!settings.enabled ? 'WriteMind is off' : active ? 'Checking your writing' : 'Paused on this site'}</b>
+            {host && <div className="host">{host}</div>}
+          </div>
+          {host && (
+            <label className="switch" title={siteOn ? `Pause on ${host}` : `Check on ${host}`}>
+              <input type="checkbox" aria-label={`Check on ${host}`} checked={siteOn} disabled={!settings.enabled} onChange={toggleSite} />
               <span />
             </label>
-          </div>
-        )}
-        <div className="row" style={{ fontSize: 12 }} data-testid="engine-status">
+          )}
+        </div>
+        <div className="row engine" data-testid="engine-status">
           <span className={`dot ${status ? 'ok' : 'wait'}`} />
-          <span className="muted">
+          <span>
             {status === null
               ? 'Starting…'
               : status.engine === 'server'
@@ -82,13 +85,26 @@ export function Popup() {
       </div>
 
       <div className="card stack">
-        <b>Writing style</b>
-        <div className="chips">
-          {STYLES.map((s) => (
-            <button key={s} className={`chip${settings.style === s ? ' active' : ''}`} onClick={() => void update({ style: s })}>
-              {STYLE_LABEL[s]}
+        <div className="row spread">
+          <b>English</b>
+          <div className="chips">
+            <button className={`chip${!british ? ' active' : ''}`} onClick={() => void update({ language: 'en-US' })}>
+              American
             </button>
-          ))}
+            <button className={`chip${british ? ' active' : ''}`} onClick={() => void update({ language: 'en-GB' })}>
+              British
+            </button>
+          </div>
+        </div>
+        <div className="stack" style={{ gap: 8 }}>
+          <b>Writing style</b>
+          <div className="chips">
+            {STYLES.map((s) => (
+              <button key={s} className={`chip${settings.style === s ? ' active' : ''}`} onClick={() => void update({ style: s })}>
+                {STYLE_LABEL[s]}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -101,7 +117,7 @@ export function Popup() {
           </div>
           <div className="stat">
             <b>{stats?.accepted ?? 0}</b>
-            <span>accepted</span>
+            <span>fixes applied</span>
           </div>
           <div className="stat">
             <b>{stats?.ignored ?? 0}</b>
@@ -112,7 +128,7 @@ export function Popup() {
 
       <div className="row spread">
         <span className="muted" style={{ fontSize: 12 }}>
-          Your text stays private.
+          🔒 Your text stays private.
         </span>
         <button className="btn" onClick={() => void browser.runtime.openOptionsPage()}>
           Settings

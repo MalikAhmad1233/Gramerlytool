@@ -11,7 +11,7 @@ internal sealed class TrayIcon : IDisposable
     private readonly Action _resume;
     private bool _paused;
 
-    public TrayIcon(Action openEditor, Action openAssistant, Action openSettings, Action<TimeSpan> pause, Action resume, Action quit)
+    public TrayIcon(Action openEditor, Action openAssistant, Action openSettings, Action<TimeSpan> pause, Action resume, Action quit, Action openWelcome)
     {
         _pause = pause;
         _resume = resume;
@@ -30,6 +30,7 @@ internal sealed class TrayIcon : IDisposable
         _pauseItem = new Forms.ToolStripMenuItem("Pause for 30 minutes", null, (_, _) => TogglePause());
         menu.Items.Add(_pauseItem);
         menu.Items.Add("Settings…", null, (_, _) => openSettings());
+        menu.Items.Add("Getting started…", null, (_, _) => openWelcome());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Quit WriteMind", null, (_, _) => quit());
         _icon.ContextMenuStrip = menu;

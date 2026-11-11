@@ -38,7 +38,10 @@ export const UI_CSS = `
 
 .wm-card { position: fixed; pointer-events: auto; width: 320px; max-width: calc(100vw - 16px);
   background: var(--wm-bg); border: 1px solid var(--wm-line); border-radius: 12px; box-shadow: var(--wm-shadow);
-  padding: 12px 14px; animation: wm-in .12s ease-out; }
+  padding: 12px 14px; animation: wm-in .12s ease-out; border-top: 3px solid var(--wm-suggestion); }
+.wm-card.error { border-top-color: var(--wm-error); }
+.wm-card.warning { border-top-color: var(--wm-warning); }
+.wm-card.ai { border-top-color: var(--wm-ai); }
 @keyframes wm-in { from { transform: translateY(4px); } }
 .wm-card header, .wm-panel > header, .wm-item header { display: flex; align-items: center; gap: 8px; }
 .wm-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600;
@@ -50,7 +53,8 @@ export const UI_CSS = `
   background: linear-gradient(90deg, var(--wm-brand), var(--wm-ai)); }
 .wm-title { font-weight: 650; font-size: 14px; margin: 6px 0 2px; }
 .wm-message { color: var(--wm-muted); margin: 0 0 10px; }
-.wm-diff { margin: 0 0 10px; font-size: 14px; }
+.wm-diff { margin: 2px 0 6px; font-size: 14px; }
+.wm-diff b { color: var(--wm-ok); }
 .wm-diff del { color: var(--wm-error); text-decoration: line-through; opacity: .8; }
 .wm-replacements { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .wm-btn { font: 600 13px/1 system-ui, sans-serif; border-radius: 8px; padding: 8px 12px; cursor: pointer;

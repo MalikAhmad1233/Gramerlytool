@@ -111,7 +111,7 @@ function Diff({ s, replacement }: { s: Suggestion; replacement?: string }) {
 function Card({ view, actions }: { view: ViewState; actions: Actions }) {
   const { suggestion: s, left, top, canEdit } = view.card!;
   return (
-    <div className="wm-card" style={{ left, top }} role="dialog" aria-label={s.title} data-testid="wm-card">
+    <div className={`wm-card ${s.source === 'ai' ? 'ai' : s.severity}`} style={{ left, top }} role="dialog" aria-label={s.title} data-testid="wm-card">
       <header>
         <SeverityChip s={s} />
         {s.source === 'ai' && <span className="wm-ai-tag">AI</span>}
@@ -120,6 +120,7 @@ function Card({ view, actions }: { view: ViewState; actions: Actions }) {
         </button>
       </header>
       <div className="wm-title">{s.title}</div>
+      {s.replacements[0] !== undefined && <Diff s={s} replacement={s.replacements[0]} />}
       <p className="wm-message">{s.message}</p>
       {s.replacements.length > 0 && canEdit && (
         <div className="wm-replacements">

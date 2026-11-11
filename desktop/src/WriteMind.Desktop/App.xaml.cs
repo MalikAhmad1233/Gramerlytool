@@ -23,6 +23,7 @@ public partial class App : Application
     private HotkeyService? _hotkeys;
     private EditorWindow? _editor;
     private SettingsWindow? _settingsWindow;
+    private WelcomeWindow? _welcome;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -56,7 +57,7 @@ public partial class App : Application
 
         _assistant = new AssistantController(_settings, _api, _checker, Dispatcher);
         _tray = new TrayIcon(OpenEditor, () => _assistant.OpenAssistant(rewrite: false), OpenSettings,
-            d => _assistant.Pause(d), () => _assistant.Resume(), Quit);
+            d => _assistant.Pause(d), () => _assistant.Resume(), Quit, OpenWelcome);
         _assistant.Notify += (_, message) => Dispatcher.BeginInvoke(() => _tray.Notify(message));
         _assistant.ActiveAppChanged += (_, app) => Dispatcher.BeginInvoke(() => _tray.SetStatus(app));
         _assistant.Start();
@@ -64,7 +65,11 @@ public partial class App : Application
 
         StartupRegistration.Apply(_settings.Current.StartWithWindows);
 
-        if (!e.Args.Contains("--background"))
+        if (!_settings.Current.Onboarded)
+        {
+            OpenWelcome();
+        }
+        else if (!e.Args.Contains("--background"))
         {
             OpenEditor();
             _tray.Notify("WriteMind is ready — no account or setup needed. It helps in Word, Outlook, Notepad and WhatsApp; press Ctrl+Alt+W for the assistant.");
@@ -81,6 +86,18 @@ public partial class App : Application
         }
         _editor.Show();
         _editor.Activate();
+    }
+
+    private void OpenWelcome()
+    {
+        if (_settings is null) return;
+        if (_welcome is null || !_welcome.IsLoaded)
+        {
+            _welcome = new WelcomeWindow(_settings, OpenEditor);
+            _welcome.Closed += (_, _) => _welcome = null;
+        }
+        _welcome.Show();
+        _welcome.Activate();
     }
 
     private void OpenSettings()

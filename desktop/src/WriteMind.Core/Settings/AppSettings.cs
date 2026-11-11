@@ -20,6 +20,9 @@ public sealed record AppSettings
     public bool StartWithWindows { get; init; } = true;
     public bool ShowUnderlines { get; init; } = true;
 
+    /// <summary>False until the first-run welcome window has been closed.</summary>
+    public bool Onboarded { get; init; }
+
     public SuggestionFilters ToFilters() => new(
         Dictionary.Select(w => w.ToLowerInvariant()).ToHashSet(),
         DisabledRules.ToHashSet(StringComparer.Ordinal),
