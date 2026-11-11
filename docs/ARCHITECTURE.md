@@ -88,11 +88,20 @@ flowchart LR
 ### 2.2 Built-in checker (no server required)
 
 Both clients embed a built-in checker so they work immediately after install, offline, with no account:
-Hunspell spelling (`shared/dictionaries`, en-US/en-GB) plus 45 grammar, punctuation and style rules defined once in
-[`shared/offline/rules.json`](../shared/offline/rules.json). The extension (TypeScript, `extension/src/offline`) and the
-Windows app (C#, `desktop/src/WriteMind.Core/Offline`) both interpret that file; `shared/fixtures/offline-parity.json`
-proves they return identical suggestions. Each client tries the server first and falls back to the built-in checker
-(retrying the server every 30 s), so the same UI and contract work in both modes.
+
+- **Hunspell** (`shared/dictionaries`, en-US/en-GB) decides whether a word is spelled correctly.
+- A **trained language model** (`shared/model/en.model.txt`, built by [`training/`](../training/README.md)) decides
+  what the writer most likely meant: word frequencies and word pairs from the Google Books n-gram corpus, a
+  typing-error model learned from 36,000 real misspellings, and context models for 34 sets of commonly confused
+  words (then/than, form/from, dose/does…). All scores are integers, so both clients make identical choices.
+- **81 grammar, punctuation and style rules** defined once in
+  [`shared/offline/rules.json`](../shared/offline/rules.json), including common errors of South Asian English
+  ("discuss about", "since two years", "Myself Ahmed", "can able to", "informations").
+
+The extension (TypeScript, `extension/src/offline`) and the Windows app (C#, `desktop/src/WriteMind.Core/Offline`)
+both interpret the same files; `shared/fixtures/offline-parity.json` (194 cases, every suggestion and every
+replacement) proves they return identical results. Each client tries the server first and falls back to the
+built-in checker (retrying the server every 30 s), so the same UI and contract work in both modes.
 
 ### 2.3 Why offsets are UTF-16
 

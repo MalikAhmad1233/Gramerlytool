@@ -108,3 +108,15 @@ jobs:
         run: dotnet publish src/WriteMind.Desktop/WriteMind.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
       - uses: actions/upload-artifact@v4
         with: { name: writemind-windows-x64, path: desktop/publish }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: extension/package-lock.json }
+      - name: Build the Chrome extension (shipped inside the installer)
+        working-directory: extension
+        run: npm ci && npm run build
+      - name: Build the installer (NSIS)
+        shell: bash
+        run: |
+          if ! command -v makensis >/dev/null && [ ! -x "/c/Program Files (x86)/NSIS/makensis.exe" ]; then choco install nsis -y --no-progress; fi
+          desktop/installer/build-installer.sh desktop/publish/WriteMind.exe extension/.output/chrome-mv3 desktop/WriteMind-Setup-1.1.0.exe 1.1.0
+      - uses: actions/upload-artifact@v4
+        with: { name: writemind-setup, path: desktop/WriteMind-Setup-*.exe }

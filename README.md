@@ -12,7 +12,7 @@ phrasings in Professional, Formal, Casual, Friendly or Concise styles, and
 |--------|----------------|-------|
 | **Chrome extension** | Gmail, WhatsApp Web, LinkedIn, Outlook on the web, Slack, and any textarea or rich-text editor | TypeScript · React 19 · WXT · Manifest V3 |
 | **Windows app** | Microsoft Word, Outlook, Notepad, WhatsApp Desktop, WordPad, OneNote, Teams, plus a built-in editor | C# · .NET 10 · WPF · UI Automation |
-| **Built-in checker** | Inside both apps — works with no server, no account, fully offline | Hunspell dictionaries + shared rules ([shared/offline](shared/offline/rules.json)) |
+| **Built-in checker** | Inside both apps — works with no server, no account, fully offline | Hunspell + a **trained language model** ([training/](training/README.md)) + shared rules ([shared/offline](shared/offline/rules.json)) |
 | **Optional server** | Full grammar engine and AI suggestions for both clients | Python · FastAPI · PostgreSQL · LanguageTool 6.8 · Claude (Anthropic SDK) |
 
 ## Product rules (enforced in code and tests)
@@ -29,9 +29,14 @@ phrasings in Professional, Formal, Casual, Friendly or Concise styles, and
 
 ## Getting started (no setup needed)
 
-1. **Chrome:** unzip `writemind-extension-1.0.0-chrome.zip`, open `chrome://extensions`, turn on **Developer mode**,
-   click **Load unpacked** and pick the unzipped folder. Start typing in Gmail, WhatsApp Web, LinkedIn or any text box.
-2. **Windows:** run `WriteMind.exe` (Windows may ask you to confirm: **More info → Run anyway**).
+1. **Windows:** run **`WriteMind-Setup-1.1.0.exe`** (no administrator rights needed; if Windows SmartScreen asks,
+   choose **More info → Run anyway**). It installs WriteMind, adds Start-menu and desktop shortcuts and an
+   uninstaller, and shows a short welcome. WriteMind then lives in the system tray and helps in Word, Outlook,
+   Notepad, WhatsApp and more. (Prefer no installer? `WriteMind.exe` runs as is.)
+2. **Chrome:** the installer can copy the extension to your PC and open a step-by-step guide. Or unzip
+   `writemind-extension-1.1.0-chrome.zip`, open `chrome://extensions`, turn on **Developer mode**, click
+   **Load unpacked** and pick the unzipped folder. A welcome page lets you choose American or British English and
+   try the checker right away.
 
 Both apps work immediately with the **built-in checker** — no account, no server, and your text never leaves your
 device. If a WriteMind server is reachable (default `http://localhost:8000`), they switch to it automatically for the
@@ -41,7 +46,7 @@ full LanguageTool engine and AI suggestions, and fall back to the built-in check
 
 ```
  typing ─► debounce ─► server reachable? ─ yes ─► /v1/check (LanguageTool + rules; + AI after a longer pause)
-                                        └─ no ──► built-in checker (Hunspell + shared rules, on device)
+                                        └─ no ──► built-in checker (Hunspell + trained model + shared rules, on device)
  response ─► offsets rebased onto the current text ─► underlines in an overlay
  user clicks a suggestion ─► Accept / Ignore / Add to dictionary / Turn off rule
 ```
@@ -57,11 +62,13 @@ Full design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | Backend (pytest, real PostgreSQL + LanguageTool) | **175 passed** |
 | Grammar accuracy fixture ([shared/fixtures/accuracy-en.json](shared/fixtures/accuracy-en.json)) | **42/42** errors detected, **0/23** false positives (LanguageTool-only, no AI) |
 | `/v1/check` latency (HTTP, fast mode, typing simulation) | p50 **52 ms**, p95 **60 ms** |
-| Built-in checker (no server) | **42/42** fixture errors and **25/25** held-out errors fixed, **0/60** false positives |
-| Extension unit tests (vitest) | **211 passed** |
-| Extension end-to-end (Playwright, real Chromium + extension) | **13 passed** — textarea, Gmail-style, Lexical-style and WhatsApp Web editors, sensitive fields, rewrite, no server, a non-WriteMind server, and taking over open tabs after an update |
-| Windows Core (xUnit, incl. live API test) | **201 passed** — incl. 135 cases proving the Windows checker matches the extension exactly |
-| Windows app (WPF) | Builds clean with warnings-as-errors; CI builds/tests/publishes on `windows-latest` |
+| Built-in checker — held-out real misspellings (10,731) | right word first **90.3%** (was 76.0% before training), in top 3 **93.4%** |
+| Built-in checker — JFLEG learner essays (1,501 sentences, 4 human corrections each) | **59.6%** of suggestions match a human correction (was 50.8%); **98%** point at a real problem |
+| Built-in checker — professionally edited text (1,000 sentences) | **8.3** notes per 100 sentences (was 15.3), incl. 3.7 British-spelling notes in US mode |
+| Extension unit tests (vitest) | **268 passed** |
+| Extension end-to-end (Playwright, real Chromium + extension) | **14 passed** — textarea, Gmail-style, Lexical-style and WhatsApp Web editors, sensitive fields, rewrite, no server, a non-WriteMind server, taking over open tabs after an update, and the welcome page |
+| Windows Core (xUnit, incl. live API test) | **315 passed** — incl. 194 cases proving the Windows checker (rules *and* trained model) matches the extension exactly |
+| Windows app (WPF) | Builds clean with warnings-as-errors; CI builds, tests, publishes and packages the installer on `windows-latest` |
 
 The WPF app's UI Automation layer (reading Word/Outlook/Notepad and typing accepted corrections) can
 only run on Windows, so it is compiled and packaged by CI but has not been exercised interactively here.
@@ -104,7 +111,8 @@ The apps have no sign-in: settings and the personal dictionary are stored on eac
 backend/     FastAPI service: auth, settings, dictionary, usage, and the intelligence engine
 extension/   Chrome extension (WXT + React + MV3), unit + Playwright e2e tests
 desktop/     WriteMind.Core (cross-platform) + WriteMind.Desktop (WPF) + xUnit tests
-shared/      Built-in checker rules + dictionaries, OpenAPI contract, fixtures used by all test suites
+shared/      Built-in checker rules, dictionaries and trained model, OpenAPI contract, fixtures used by all test suites
+training/    Trains and benchmarks the built-in checker's language model (public datasets, reproducible)
 infra/       LanguageTool (Maven), Dockerfiles, docker-compose
 docs/        Architecture, API, privacy, setup
 ```
@@ -115,3 +123,4 @@ docs/        Architecture, API, privacy, setup
 - [API reference](docs/API.md) — endpoints with real request/response examples
 - [Privacy & security](docs/PRIVACY.md) — data handling and threat model
 - [Setup](docs/SETUP.md) — development, testing, packaging, deployment
+- [Training](training/README.md) — how the built-in checker is trained and benchmarked

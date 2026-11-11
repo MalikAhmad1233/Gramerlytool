@@ -143,10 +143,19 @@ Release build (single self-contained `WriteMind.exe`, ~75 MB):
 cd desktop && dotnet publish src/WriteMind.Desktop/WriteMind.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
 ```
 
+Installer (`WriteMind-Setup-1.1.0.exe`: per-user, no administrator rights; Start menu and desktop shortcuts,
+uninstaller in *Apps & features*, and the Chrome extension with a step-by-step guide), built with NSIS on Linux or
+Windows:
+
+```bash
+desktop/installer/build-installer.sh desktop/publish/WriteMind.exe extension/.output/chrome-mv3 WriteMind-Setup-1.1.0.exe 1.1.0
+```
+
 `WriteMind.Core` and its tests are cross-platform. The live API test in `ApiClientTests.cs` runs when an API is
 reachable at `WRITEMIND_API_URL` (default `http://localhost:8000`) and is skipped otherwise.
 
-Using the app: it starts in the system tray (pass `--background` to skip opening the editor). Click into Word,
+Using the app: the first start shows a short welcome (American or British English, start with Windows); after
+that it starts in the system tray (pass `--background` to skip opening the editor). Click into Word,
 Outlook, Notepad or WhatsApp and type; hover an underline for the suggestion card, click the badge or press
 **Ctrl+Alt+W** for the assistant (Suggestions + Rewrite). Settings → Apps controls where WriteMind helps.
 Note that Windows blocks input into apps running as administrator unless WriteMind also runs elevated.
@@ -155,4 +164,11 @@ Note that Windows blocks input into apps running as administrator unless WriteMi
 
 `.github/workflows/ci.yml` runs three jobs: backend (PostgreSQL service + LanguageTool + pytest + ruff),
 extension (typecheck, unit tests, build, zip artifact, Playwright e2e against a live backend), and desktop on
-`windows-latest` (build, tests, single-file publish artifact).
+`windows-latest` (build, tests, single-file publish artifact, NSIS installer artifact).
+
+## 7. Training the built-in checker
+
+See [training/README.md](../training/README.md): `./training/fetch-data.sh`, `./training/train.sh` and
+`./training/eval.sh` download the public datasets, retrain `shared/model/en.model.txt` and report the benchmarks.
+After retraining, regenerate the parity fixture (`WM_WRITE_PARITY=1 npx vitest run tests/offline.parity.test.ts`
+in `extension/`) and run both test suites.

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add WriteMind to Chrome</title>
+<style>
+  :root { --brand: #4f46e5; --brand2: #7c3aed; --ink: #0f172a; --muted: #64748b; --line: #e2e8f0; --bg: #f8fafc; --card: #fff; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #e2e8f0; --muted: #94a3b8; --line: #334155; --bg: #0b1120; --card: #111827; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.55 "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+  header { background: linear-gradient(135deg, var(--brand), var(--brand2)); color: #fff; padding: 40px 24px 56px; text-align: center; }
+  header h1 { margin: 0 0 6px; font-size: 28px; }
+  header p { margin: 0; opacity: .9; }
+  main { max-width: 720px; margin: -32px auto 40px; padding: 0 16px; }
+  ol { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+  li { counter-increment: step; position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 18px 68px; margin-bottom: 12px; box-shadow: 0 6px 20px rgba(15, 23, 42, .06); }
+  li::before { content: counter(step); position: absolute; left: 20px; top: 18px; width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--brand), var(--brand2)); color: #fff; font-weight: 700; display: grid; place-items: center; }
+  b { font-weight: 600; }
+  code { display: inline-block; background: rgba(79, 70, 229, .08); color: var(--brand); padding: 2px 8px; border-radius: 6px; font: 14px Consolas, monospace; word-break: break-all; }
+  button { margin-left: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 4px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+  button:hover { border-color: var(--brand); color: var(--brand); }
+  .note { color: var(--muted); font-size: 14px; text-align: center; margin-top: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Add WriteMind to Google Chrome</h1>
+  <p>Four quick steps — then WriteMind checks your writing in Gmail, WhatsApp Web, LinkedIn and every text box.</p>
+</header>
+<main>
+  <ol>
+    <li>Open Google Chrome and go to <code>chrome://extensions</code><button data-copy="chrome://extensions">Copy</button><br>
+      <span style="color:var(--muted);font-size:14px">Paste it into the address bar and press Enter.</span></li>
+    <li>Turn on <b>Developer mode</b> with the switch in the top-right corner.</li>
+    <li>Click <b>Load unpacked</b> and choose this folder:<br><code id="folder">the “Chrome extension” folder where WriteMind is installed</code><button id="copyFolder">Copy</button></li>
+    <li>Click the puzzle-piece icon in Chrome’s toolbar and <b>pin</b> WriteMind so it’s always one click away.</li>
+  </ol>
+  <p class="note">Your text stays private: WriteMind checks it on your computer and never changes it unless you click a suggestion.</p>
+</main>
+<script>
+  const folder = decodeURIComponent(location.pathname).replace(/^\/([A-Za-z]:)/, '$1').replace(/\/[^/]*$/, '').replace(/\//g, '\\');
+  if (location.protocol === 'file:' && folder) document.getElementById('folder').textContent = folder;
+  document.getElementById('copyFolder').dataset.copy = document.getElementById('folder').textContent;
+  for (const b of document.querySelectorAll('button[data-copy]')) {
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; } catch { b.textContent = 'Select & copy'; }
+      setTimeout(() => (b.textContent = 'Copy'), 1500);
+    });
+  }
+</script>
+</body>
+</html>
