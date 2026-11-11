@@ -13,7 +13,14 @@ model, and points to the code and tests that enforce each property.
 | Reads sensitive fields | `extension/src/editors/sensitive.ts`, `WriteMind.Core/Privacy/SensitiveFieldPolicy.cs`, `AppCatalog.cs` — evaluated before any text is read. | `sensitive.test.ts`, e2e "sensitive and opted-out fields", `PolicyTests.cs` |
 | Stores user text | No table holds prose (`backend/app/models`). Request bodies are never logged; validation errors never echo input. | `test_check_api.py::test_text_is_never_logged`, `test_auth.py` (no echo) |
 
-## Data the service keeps
+## Built-in checker and accounts
+
+Both apps include a built-in checker (Hunspell dictionaries + the shared rules in `shared/offline/rules.json`). When no
+WriteMind server is configured or reachable, all checking happens on the device — text is not sent anywhere. The apps
+have **no sign-in**: settings, the personal dictionary and statistics are stored locally on each device. (The server
+still exposes account endpoints for possible future use; the clients do not call them.)
+
+## Data the service keeps (only if you run a WriteMind server)
 
 | Data | Why | Retention |
 |------|-----|-----------|
@@ -54,11 +61,10 @@ outputs that change numbers, negation, names, links or placeholders. Users can s
 
 ## Client-side storage
 
-- **Extension:** settings and tokens in `chrome.storage.local` (inaccessible to web pages). Minimal
+- **Extension:** settings in `chrome.storage.local` (inaccessible to web pages); no tokens or accounts. Minimal
   permissions: `storage` plus host access; no `tabs`, `scripting`, history or remote code. The in-page UI
   runs in a shadow root and never modifies the page's DOM for highlighting.
-- **Windows:** settings in `%APPDATA%\WriteMind\settings.json`; the session is encrypted with DPAPI
-  (CurrentUser scope). The app runs unelevated (`asInvoker`). If the target app runs elevated, Windows blocks
+- **Windows:** settings in `%APPDATA%\WriteMind\settings.json`; no accounts. The app runs unelevated (`asInvoker`). If the target app runs elevated, Windows blocks
   input and WriteMind tells the user instead of attempting a workaround.
 
 ## Threat model (summary)

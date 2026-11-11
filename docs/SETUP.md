@@ -1,5 +1,9 @@
 # Setup, testing and packaging
 
+**Using WriteMind needs no setup:** load the extension / run `WriteMind.exe` and the built-in checker works offline.
+Everything below is for developers, or for running the optional WriteMind server (full LanguageTool grammar engine and
+AI suggestions), which both apps use automatically when it is reachable.
+
 ## Prerequisites
 
 | Tool | Version | Used for |

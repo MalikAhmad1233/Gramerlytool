@@ -8,4 +8,15 @@
   <ItemGroup>
     <InternalsVisibleTo Include="WriteMind.Core.Tests" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Built-in checker data, shared with the Chrome extension (single source of truth in /shared). -->
+    <EmbeddedResource Include="..\..\..\shared\offline\rules.json" LogicalName="WriteMind.Core.Offline.rules.json" />
+    <EmbeddedResource Include="..\..\..\shared\dictionaries\en-US.aff" LogicalName="WriteMind.Core.Offline.en-US.aff" />
+    <EmbeddedResource Include="..\..\..\shared\dictionaries\en-US.dic" LogicalName="WriteMind.Core.Offline.en-US.dic" />
+    <EmbeddedResource Include="..\..\..\shared\dictionaries\en-GB.aff" LogicalName="WriteMind.Core.Offline.en-GB.aff" />
+    <EmbeddedResource Include="..\..\..\shared\dictionaries\en-GB.dic" LogicalName="WriteMind.Core.Offline.en-GB.dic" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WeCantSpell.Hunspell" Version="7.0.1" />
+  </ItemGroup>
 </Project>

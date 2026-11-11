@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 using WriteMind.Core.Api;
+using WriteMind.Core.Offline;
 using WriteMind.Core.Scheduling;
 using WriteMind.Core.Settings;
 using WriteMind.Core.Text;
@@ -19,6 +20,7 @@ public partial class EditorWindow : Window
     private const int MaxChars = 20_000;
     private readonly SettingsStore _settings;
     private readonly WriteMindApiClient _api;
+    private readonly HybridChecker _checker;
     private readonly SuggestionTracker _tracker;
     private readonly CheckScheduler _scheduler;
     private readonly SquiggleAdorner _adorner;
@@ -27,11 +29,12 @@ public partial class EditorWindow : Window
     private (int Start, int End, string Source)? _rewrite;
     private string _engineStatus = "";
 
-    public EditorWindow(SettingsStore settings, WriteMindApiClient api)
+    internal EditorWindow(SettingsStore settings, WriteMindApiClient api, HybridChecker checker)
     {
         InitializeComponent();
         _settings = settings;
         _api = api;
+        _checker = checker;
         _tracker = new SuggestionTracker(() => _settings.Current.ToFilters());
         _tracker.Changed += (_, _) => Dispatcher.BeginInvoke(Refresh);
         _scheduler = new CheckScheduler(mode => Dispatcher.BeginInvoke(() => _ = RunCheckAsync(mode)), () => _settings.Current.AiEnabled);
@@ -92,7 +95,7 @@ public partial class EditorWindow : Window
         }
         try
         {
-            var response = await _api.CheckAsync(new CheckRequest
+            var response = await _checker.CheckAsync(new CheckRequest
             {
                 Text = text,
                 Mode = mode,
@@ -104,7 +107,9 @@ public partial class EditorWindow : Window
                 Ai = settings.AiEnabled,
             }, cts.Token);
             _tracker.Apply(text, response);
-            _engineStatus = response.Engine.Ai == "used" ? "Grammar engine + AI" : "Grammar engine";
+            _engineStatus = response.Engine.Languagetool == "builtin"
+                ? "Built-in checker"
+                : response.Engine.Ai == "used" ? "WriteMind server + AI" : "WriteMind server";
         }
         catch (OperationCanceledException)
         {
@@ -149,14 +154,20 @@ public partial class EditorWindow : Window
         Editor.SelectedText = replacement; // undoable with Ctrl+Z
         Editor.CaretIndex = s.Offset + replacement.Length;
         Editor.Focus();
-        _ = _api.SendFeedbackAsync([new FeedbackEvent(s.RuleId, s.Category, s.Source, "accepted")]).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
+        SendFeedback(s, "accepted");
+    }
+
+    private void SendFeedback(Suggestion s, string action)
+    {
+        if (!_checker.UsingServer) return;
+        _ = _api.SendFeedbackAsync([new FeedbackEvent(s.RuleId, s.Category, s.Source, action)]).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
     }
 
     private void Ignore(Suggestion s)
     {
         CardPopup.IsOpen = false;
         _tracker.Ignore(s);
-        _ = _api.SendFeedbackAsync([new FeedbackEvent(s.RuleId, s.Category, s.Source, "ignored")]).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
+        SendFeedback(s, "ignored");
     }
 
     private void AddWord(Suggestion s)
@@ -164,7 +175,6 @@ public partial class EditorWindow : Window
         CardPopup.IsOpen = false;
         var word = s.Original.Trim();
         _settings.Update(c => c with { Dictionary = c.Dictionary.Append(word).Distinct(StringComparer.OrdinalIgnoreCase).ToList() });
-        if (_api.CurrentUser is not null) _ = _api.AddWordAsync(word).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
         _tracker.Refresh();
     }
 
@@ -192,7 +202,7 @@ public partial class EditorWindow : Window
         Panel.SetRewriteBusy(true);
         try
         {
-            var response = await _api.RewriteAsync(new RewriteRequest
+            var response = await _checker.RewriteAsync(new RewriteRequest
             {
                 Text = r.Source,
                 Style = style,

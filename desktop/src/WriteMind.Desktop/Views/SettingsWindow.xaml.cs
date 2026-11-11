@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using WriteMind.Core.Api;
+using WriteMind.Core.Offline;
 using WriteMind.Core.Privacy;
 using WriteMind.Core.Settings;
 using WriteMind.Desktop.Services;
@@ -17,15 +18,15 @@ public partial class SettingsWindow : Window
     ];
 
     private readonly SettingsStore _settings;
-    private readonly WriteMindApiClient _api;
+    private readonly HybridChecker _checker;
     private readonly Action<Uri> _changeApiUrl;
     private bool _loading;
 
-    internal SettingsWindow(SettingsStore settings, WriteMindApiClient api, Action<Uri> changeApiUrl)
+    internal SettingsWindow(SettingsStore settings, HybridChecker checker, Action<Uri> changeApiUrl)
     {
         InitializeComponent();
         _settings = settings;
-        _api = api;
+        _checker = checker;
         _changeApiUrl = changeApiUrl;
         foreach (var (code, name) in Languages) LanguageBox.Items.Add(new ComboBoxItem { Content = name, Tag = code });
         Load();
@@ -80,7 +81,6 @@ public partial class SettingsWindow : Window
 
         RenderTags(WordList, s.Dictionary, RemoveWord);
         RenderTags(RuleList, s.DisabledRules, rule => _settings.Update(c => c with { DisabledRules = c.DisabledRules.Where(r => r != rule).ToList() }));
-        RenderAccount();
         _loading = false;
     }
 
@@ -105,61 +105,6 @@ public partial class SettingsWindow : Window
         }
     }
 
-    private void RenderAccount()
-    {
-        var user = _api.CurrentUser;
-        SignedOutPanel.Visibility = user is null ? Visibility.Visible : Visibility.Collapsed;
-        SignedInPanel.Visibility = user is null ? Visibility.Collapsed : Visibility.Visible;
-        if (user is not null)
-        {
-            UserText.Text = user.DisplayName ?? user.Email;
-            UserDetail.Text = $"{user.Email} · {user.Plan} plan";
-        }
-    }
-
-    private async Task RunAsync(Func<Task> action, string? success = null)
-    {
-        AccountMessage.Text = "";
-        IsEnabled = false;
-        try
-        {
-            await action();
-            if (success is not null) AccountMessage.Text = success;
-        }
-        catch (WriteMindApiException ex)
-        {
-            AccountMessage.Text = ex.Message;
-        }
-        finally
-        {
-            IsEnabled = true;
-            Load();
-        }
-    }
-
-    private async void OnSignIn(object sender, RoutedEventArgs e) =>
-        await RunAsync(async () =>
-        {
-            await _api.LoginAsync(EmailBox.Text.Trim(), PasswordBox.Password);
-            await SyncService.PullAsync(_settings, _api);
-        }, "Signed in. Your dictionary and preferences are synced.");
-
-    private async void OnRegister(object sender, RoutedEventArgs e) =>
-        await RunAsync(async () =>
-        {
-            await _api.RegisterAsync(EmailBox.Text.Trim(), PasswordBox.Password, string.IsNullOrWhiteSpace(NameBox.Text) ? null : NameBox.Text.Trim());
-            await SyncService.PushAsync(_settings, _api);
-        }, "Account created.");
-
-    private async void OnSync(object sender, RoutedEventArgs e) =>
-        await RunAsync(async () =>
-        {
-            await SyncService.PushAsync(_settings, _api);
-            await SyncService.PullAsync(_settings, _api);
-        }, "Synced.");
-
-    private async void OnSignOut(object sender, RoutedEventArgs e) => await RunAsync(() => _api.LogoutAsync());
-
     private async void OnSaveUrl(object sender, RoutedEventArgs e)
     {
         if (!Uri.TryCreate(ApiUrlBox.Text.Trim(), UriKind.Absolute, out var uri) || (uri.Scheme != "https" && !uri.IsLoopback))
@@ -174,16 +119,11 @@ public partial class SettingsWindow : Window
 
     private async Task TestConnectionAsync()
     {
-        ConnectionText.Text = "Testing connection…";
-        try
-        {
-            var meta = await _api.MetaAsync();
-            ConnectionText.Text = $"Connected to {meta.Name} {meta.Version} · {(meta.AiAvailable ? "AI suggestions available" : "grammar engine only")}";
-        }
-        catch (WriteMindApiException ex)
-        {
-            ConnectionText.Text = ex.Message;
-        }
+        ConnectionText.Text = "Checking…";
+        var server = await _checker.RefreshAsync();
+        ConnectionText.Text = server
+            ? $"Using the WriteMind server{(_checker.ServerHasAi ? " with AI suggestions" : "")}."
+            : "Using the built-in checker — your text never leaves this PC.";
     }
 
     private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
@@ -210,7 +150,6 @@ public partial class SettingsWindow : Window
         var word = WordBox.Text.Trim();
         if (word.Length == 0 || word.Any(char.IsWhiteSpace)) return;
         _settings.Update(c => c with { Dictionary = c.Dictionary.Append(word).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList() });
-        if (_api.CurrentUser is not null) _ = _api.AddWordAsync(word).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
         WordBox.Clear();
         Load();
     }
@@ -218,6 +157,5 @@ public partial class SettingsWindow : Window
     private void RemoveWord(string word)
     {
         _settings.Update(c => c with { Dictionary = c.Dictionary.Where(w => !w.Equals(word, StringComparison.OrdinalIgnoreCase)).ToList() });
-        if (_api.CurrentUser is not null) _ = _api.RemoveWordAsync(word).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
     }
 }

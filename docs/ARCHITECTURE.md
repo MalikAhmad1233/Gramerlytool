@@ -85,7 +85,16 @@ flowchart LR
 7. **Feedback** — the client reports `{rule_id, category, source, action}` (no
    text) so aggregate quality metrics can tune rule profiles.
 
-### 2.2 Why offsets are UTF-16
+### 2.2 Built-in checker (no server required)
+
+Both clients embed a built-in checker so they work immediately after install, offline, with no account:
+Hunspell spelling (`shared/dictionaries`, en-US/en-GB) plus 45 grammar, punctuation and style rules defined once in
+[`shared/offline/rules.json`](../shared/offline/rules.json). The extension (TypeScript, `extension/src/offline`) and the
+Windows app (C#, `desktop/src/WriteMind.Core/Offline`) both interpret that file; `shared/fixtures/offline-parity.json`
+proves they return identical suggestions. Each client tries the server first and falls back to the built-in checker
+(retrying the server every 30 s), so the same UI and contract work in both modes.
+
+### 2.3 Why offsets are UTF-16
 
 JavaScript strings, .NET strings and LanguageTool (Java) all index text in
 UTF-16 code units. Python indexes code points. The backend therefore converts
@@ -225,7 +234,7 @@ deterministic fake and lets operators swap models without code changes.
 
 ### 4.3 Cross-cutting
 
-* **Auth**: e-mail + password (argon2id). Access JWT (HS256, 15 min) + opaque
+* **Auth** (server only; the clients currently have no sign-in and store preferences locally): e-mail + password (argon2id). Access JWT (HS256, 15 min) + opaque
   refresh token (256-bit, stored only as SHA-256 hash) with rotation and reuse
   detection (reuse revokes the whole token family). Guests may use `/check` and
   `/rewrite` under a stricter IP-keyed rate limit; signing in adds sync and

@@ -3,6 +3,7 @@ using System.Windows.Automation;
 using Uia = System.Windows.Automation.Automation;
 using System.Windows.Threading;
 using WriteMind.Core.Api;
+using WriteMind.Core.Offline;
 using WriteMind.Core.Privacy;
 using WriteMind.Core.Scheduling;
 using WriteMind.Core.Settings;
@@ -55,6 +56,7 @@ internal sealed class AssistantController : IDisposable
 
     private readonly SettingsStore _settings;
     private readonly WriteMindApiClient _api;
+    private readonly HybridChecker _checker;
     private readonly Dispatcher _ui;
     private readonly FocusMonitor _focus = new();
     private readonly SemaphoreSlim _uia = new(1, 1);
@@ -74,10 +76,11 @@ internal sealed class AssistantController : IDisposable
     private DateTimeOffset _pausedUntil = DateTimeOffset.MinValue;
     private (int Start, int End, string Source)? _rewrite;
 
-    public AssistantController(SettingsStore settings, WriteMindApiClient api, Dispatcher ui)
+    public AssistantController(SettingsStore settings, WriteMindApiClient api, HybridChecker checker, Dispatcher ui)
     {
         _settings = settings;
         _api = api;
+        _checker = checker;
         _ui = ui;
         _hoverTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(60), DispatcherPriority.Input, (_, _) => OnHoverTick(), ui);
     }
@@ -321,7 +324,7 @@ internal sealed class AssistantController : IDisposable
         }
         try
         {
-            var response = await _api.CheckAsync(new CheckRequest
+            var response = await _checker.CheckAsync(new CheckRequest
             {
                 Text = text,
                 Mode = mode,
@@ -349,9 +352,13 @@ internal sealed class AssistantController : IDisposable
 
     // -------------------------------------------------------------------------------- actions
 
-    private void SendFeedback(Suggestion s, string action) =>
+    /// <summary>Anonymous quality signal (rule id + action, never text); only sent when a server is in use.</summary>
+    private void SendFeedback(Suggestion s, string action)
+    {
+        if (!_checker.UsingServer) return;
         _ = _api.SendFeedbackAsync([new FeedbackEvent(s.RuleId, s.Category, s.Source, action)]).ContinueWith(
             static t => _ = t.Exception, TaskScheduler.Default);
+    }
 
     /// <summary>Writes into the user's document — only ever called from an Accept click.</summary>
     public void Accept(Suggestion suggestion, string replacement)
@@ -418,7 +425,6 @@ internal sealed class AssistantController : IDisposable
     {
         var word = s.Original.Trim();
         _settings.Update(c => c with { Dictionary = c.Dictionary.Append(word).Distinct(StringComparer.OrdinalIgnoreCase).ToList() });
-        if (_api.CurrentUser is not null) _ = _api.AddWordAsync(word).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
         SendFeedback(s, "added_to_dictionary");
         _popup?.Hide();
         _ = PollAsync();
@@ -426,9 +432,7 @@ internal sealed class AssistantController : IDisposable
 
     public void DisableRule(Suggestion s)
     {
-        var updated = _settings.Update(c => c with { DisabledRules = c.DisabledRules.Append(s.RuleId).Distinct().ToList() });
-        if (_api.CurrentUser is not null)
-            _ = _api.PutSettingsAsync(new { disabled_rules = updated.DisabledRules }).ContinueWith(static t => _ = t.Exception, TaskScheduler.Default);
+        _settings.Update(c => c with { DisabledRules = c.DisabledRules.Append(s.RuleId).Distinct().ToList() });
         SendFeedback(s, "rule_disabled");
         _popup?.Hide();
         Notify?.Invoke(this, "Rule turned off. Re-enable it in Settings → Writing.");
@@ -492,7 +496,7 @@ internal sealed class AssistantController : IDisposable
         await _ui.InvokeAsync(() => _assistant?.Panel.SetRewriteBusy(true));
         try
         {
-            var response = await _api.RewriteAsync(new RewriteRequest
+            var response = await _checker.RewriteAsync(new RewriteRequest
             {
                 Text = rewrite.Value.Source,
                 Style = style,

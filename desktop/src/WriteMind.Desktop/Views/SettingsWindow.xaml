@@ -14,45 +14,22 @@
         </StackPanel>
 
         <TabControl BorderThickness="0" Background="Transparent">
-            <TabItem Header="Account">
+            <TabItem Header="General">
                 <StackPanel Margin="4,12">
                     <Border Style="{StaticResource CardBorder}">
                         <StackPanel>
-                            <StackPanel x:Name="SignedOutPanel">
-                                <TextBlock Text="Sign in (optional)" Style="{StaticResource TitleText}" />
-                                <TextBlock Style="{StaticResource MutedText}" Margin="0,2,0,12"
-                                           Text="Sync your dictionary and preferences with the Chrome extension. Checking works without an account." />
-                                <TextBlock Text="E-mail" Style="{StaticResource ChipLabel}" />
-                                <TextBox x:Name="EmailBox" Style="{StaticResource FieldBox}" />
-                                <TextBlock Text="Password" Style="{StaticResource ChipLabel}" />
-                                <PasswordBox x:Name="PasswordBox" Padding="8,6" Margin="0,0,0,8" />
-                                <TextBlock Text="Name (for new accounts)" Style="{StaticResource ChipLabel}" />
-                                <TextBox x:Name="NameBox" Style="{StaticResource FieldBox}" />
-                                <WrapPanel>
-                                    <Button Style="{StaticResource PrimaryButton}" Content="Sign in" Click="OnSignIn" />
-                                    <Button Style="{StaticResource SecondaryButton}" Content="Create account" Click="OnRegister" />
-                                </WrapPanel>
+                            <TextBlock Text="Checking engine" Style="{StaticResource TitleText}" />
+                            <TextBlock Style="{StaticResource MutedText}" Margin="0,2,0,10"
+                                       Text="WriteMind works right away with its built-in checker — no account and no server needed. Optionally connect a WriteMind server for the full grammar engine and AI suggestions." />
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <Ellipse x:Name="EngineDot" Width="9" Height="9" Fill="{StaticResource OkBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock x:Name="ConnectionText" Style="{StaticResource BodyText}" Text="Checking…" />
                             </StackPanel>
-                            <StackPanel x:Name="SignedInPanel" Visibility="Collapsed">
-                                <TextBlock x:Name="UserText" Style="{StaticResource TitleText}" />
-                                <TextBlock x:Name="UserDetail" Style="{StaticResource MutedText}" Margin="0,2,0,12" />
-                                <WrapPanel>
-                                    <Button Style="{StaticResource SecondaryButton}" Content="Sync now" Click="OnSync" />
-                                    <Button Style="{StaticResource SecondaryButton}" Content="Sign out" Click="OnSignOut" />
-                                </WrapPanel>
-                            </StackPanel>
-                            <TextBlock x:Name="AccountMessage" Style="{StaticResource MutedText}" Margin="0,6,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource CardBorder}" Margin="0,12,0,0">
-                        <StackPanel>
-                            <TextBlock Text="Connection" Style="{StaticResource TitleText}" />
-                            <TextBlock Style="{StaticResource MutedText}" Margin="0,2,0,8" Text="Address of the WriteMind API." />
-                            <DockPanel>
+                            <TextBlock Text="WriteMind server address (optional)" Style="{StaticResource ChipLabel}" />
+                            <DockPanel Margin="0,4,0,0">
                                 <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Save &amp; test" Click="OnSaveUrl" Margin="8,0,0,8" />
                                 <TextBox x:Name="ApiUrlBox" Style="{StaticResource FieldBox}" />
                             </DockPanel>
-                            <TextBlock x:Name="ConnectionText" Style="{StaticResource MutedText}" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -137,8 +114,8 @@
                             <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• Your text is never changed unless you click Accept or Replace." />
                             <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• No keystroke logging: WriteMind reads the focused field's text through Windows UI Automation — it installs no keyboard hooks." />
                             <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• Password and sensitive fields, password managers and terminals are never read." />
-                            <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• Text is processed in memory by the WriteMind service and is not stored. Only anonymous counters are kept." />
-                            <TextBlock Style="{StaticResource BodyText}" Text="• Your sign-in is encrypted on this PC with Windows Data Protection." />
+                            <TextBlock Style="{StaticResource BodyText}" Margin="0,0,0,6" Text="• No account needed. With the built-in checker your text never leaves this PC." />
+                            <TextBlock Style="{StaticResource BodyText}" Text="• If you connect a WriteMind server, text is processed in memory and is not stored." />
                         </StackPanel>
                     </Border>
                 </StackPanel>

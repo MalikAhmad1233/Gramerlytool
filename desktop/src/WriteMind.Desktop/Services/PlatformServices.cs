@@ -1,50 +1,8 @@
 using System.Windows.Interop;
 using Microsoft.Win32;
-using WriteMind.Core.Api;
-using WriteMind.Core.Settings;
 using WriteMind.Desktop.Interop;
 
 namespace WriteMind.Desktop.Services;
-
-/// <summary>Keeps local settings and the account in sync (same model as the Chrome extension).</summary>
-internal static class SyncService
-{
-    public static async Task PullAsync(SettingsStore settings, WriteMindApiClient api)
-    {
-        if (api.CurrentUser is null) return;
-        var remote = await api.GetSettingsAsync();
-        var dictionary = await api.GetDictionaryAsync();
-        var local = settings.Current;
-        foreach (var word in local.Dictionary.Where(w => !dictionary.Words.Contains(w, StringComparer.OrdinalIgnoreCase)))
-            await api.AddWordAsync(word);
-        settings.Update(c => c with
-        {
-            Language = remote.Language,
-            Style = remote.DefaultStyle,
-            AiEnabled = remote.AiEnabled,
-            Categories = remote.EnabledCategories,
-            DisabledRules = c.DisabledRules.Union(remote.DisabledRules).ToList(),
-            DisabledApps = c.DisabledApps.Union(remote.DisabledApps, StringComparer.OrdinalIgnoreCase).ToList(),
-            Dictionary = c.Dictionary.Union(dictionary.Words, StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList(),
-        });
-    }
-
-    public static async Task PushAsync(SettingsStore settings, WriteMindApiClient api)
-    {
-        if (api.CurrentUser is null) return;
-        var s = settings.Current;
-        await api.PutSettingsAsync(new
-        {
-            language = s.Language,
-            default_style = s.Style,
-            ai_enabled = s.AiEnabled,
-            enabled_categories = s.Categories,
-            disabled_rules = s.DisabledRules,
-            disabled_apps = s.DisabledApps,
-        });
-        foreach (var word in s.Dictionary) await api.AddWordAsync(word);
-    }
-}
 
 /// <summary>"Start with Windows" via the per-user Run key (no admin rights needed).</summary>
 internal static class StartupRegistration
