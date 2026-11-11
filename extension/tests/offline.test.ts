@@ -5,6 +5,8 @@ import accuracy from '../../shared/fixtures/accuracy-en.json';
 import heldout from '../../shared/fixtures/offline-heldout.json';
 import { checkOffline, expandContractions, contract, rewriteOffline, transform, type OfflineOptions } from '../src/offline/engine';
 import { Speller } from '../src/offline/speller';
+import { GB, LanguageModel } from '../src/offline/model';
+import trainedFixture from '../../shared/fixtures/offline-trained.json';
 
 const DICT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'shared', 'dictionaries');
 const load = (lang: string) =>
@@ -134,5 +136,44 @@ describe('built-in rewrite', () => {
     const fixed = rewriteOffline('She go to school every day', 'professional', 3, 'en-US', speller);
     expect(fixed.alternatives[0]!.text).toBe('She goes to school every day.');
     expect(fixed.alternatives[0]!.notes[0]).toBe('1 correction(s) applied');
+  });
+});
+
+describe('trained language model', () => {
+  const model = LanguageModel.parse(readFileSync(join(DICT_DIR, '..', 'model', 'en.model.txt'), 'utf8'));
+  const trained = new Speller(readFileSync(join(DICT_DIR, 'en-US.aff'), 'utf8'), readFileSync(join(DICT_DIR, 'en-US.dic'), 'utf8'), model);
+  const run = (text: string) => checkOffline(text, NEUTRAL, trained);
+
+  it.each(trainedFixture.fixes)('fixes “%s”', (bad, good) => {
+    const ok = run(bad!).suggestions.some((s) => s.replacements.some((r) => bad!.slice(0, s.offset) + r + bad!.slice(s.offset + s.length) === good));
+    expect(ok, JSON.stringify(run(bad!).suggestions.map((s) => [s.original, s.replacements]))).toBe(true);
+  });
+
+  it.each(trainedFixture.clean)('leaves “%s” alone', (text) => {
+    expect(run(text).suggestions.map((s) => `${s.original}→${s.replacements[0]}`)).toEqual([]);
+  });
+
+  it('ranks corrections with the learned typing-error model and word statistics', () => {
+    expect(trained.suggest('peole')[0]).toBe('people');
+    expect(trained.suggest('accidantly')[0]).toBe('accidentally');
+    expect(trained.suggest('ther', null, 'is')[0]).toBe('there');
+    expect(trained.suggest('thier', 'over', null)[0]).toBe('their');
+    expect(trained.suggest('Becuase')[0]).toBe('Because');
+    expect(model.editCost('acommodate', 'accommodate')).toBeLessThan(model.editCost('acommodate', 'accumulate'));
+  });
+
+  it('is fast enough to run while typing', () => {
+    const text = 'I recieved teh documnet and we will discuss about it tomorow. '.repeat(40);
+    run(text);
+    const started = performance.now();
+    run(text + ' x');
+    expect(performance.now() - started).toBeLessThan(1500);
+  });
+
+  it('flags British spellings gently in American English (and the reverse)', () => {
+    const s = run('The colour is nice.').suggestions[0]!;
+    expect([s.rule_id, s.severity, s.replacements[0]]).toEqual(['WM_SPELLING_VARIANT', 'suggestion', 'color']);
+    const gb = new Speller(readFileSync(join(DICT_DIR, 'en-GB.aff'), 'utf8'), readFileSync(join(DICT_DIR, 'en-GB.dic'), 'utf8'), model, GB);
+    expect(checkOffline('The colour is nice.', { ...NEUTRAL, language: 'en-GB' }, gb).suggestions).toEqual([]);
   });
 });

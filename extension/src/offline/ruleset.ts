@@ -32,6 +32,7 @@ export interface RuleData {
   chatApps: string[];
   protect: string[];
   allowWords: string[];
+  nameParticles?: string[];
   typos: Record<string, string>;
   maps: Record<string, Record<string, string | string[]>>;
   rules: RuleDef[];

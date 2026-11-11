@@ -4,6 +4,7 @@
  */
 import type { CheckResponse, RewriteAlternative, RewriteResponse, RewriteStyle, Style, Suggestion } from '../shared/types';
 import { RULES, matchCase, overlapsAny, protectedSpans, ruleIssues, type OfflineIssue } from './ruleset';
+import { confusionIssues } from './confusion';
 import { spellingIssues, type Speller } from './speller';
 
 export interface OfflineOptions {
@@ -30,8 +31,9 @@ const VOWEL_SOUND_UNI = ['unin', 'unim', 'unid'];
 const SILENT_H = ['hour', 'honest', 'honor', 'honour', 'heir'];
 const NOT_A_NOUN = new Set(['and', 'or', 'nor', 'but', 'is', 'are', 'was', 'of', 'to', 'in', 'on', 'at', 'the', 'a', 'an']);
 
-function startsWithVowelSound(word: string): boolean {
-  if (word.length > 1 && word === word.toUpperCase()) return 'AEFHILMNORSX'.includes(word[0]!);
+function startsWithVowelSound(word: string, letterName = false): boolean {
+  // Acronyms and single letters are read letter by letter: "an FBI agent", "an M.A.", "an F1 car".
+  if ((word.length > 1 || letterName) && word === word.toUpperCase()) return 'AEFHILMNORSX'.includes(word[0]!);
   const w = word.toLowerCase();
   if (SILENT_H.some((p) => w.startsWith(p))) return true;
   if (VOWEL_SOUND_UNI.some((p) => w.startsWith(p))) return true;
@@ -52,7 +54,8 @@ function articleIssues(text: string): OfflineIssue[] {
       const before = text.slice(0, m.index).replace(/[\s"'“(]+$/, '');
       if (before.length && !/[.!?]$/.test(before) && !/\n\s*$/.test(text.slice(0, m.index))) continue; // "Plan A"
     }
-    const expected = startsWithVowelSound(next) ? 'an' : 'a';
+    const letterName = next.length === 1 && /^[.\d-]/.test(text.slice(m.index + m[0].length, m.index + m[0].length + 1));
+    const expected = startsWithVowelSound(next, letterName) ? 'an' : 'a';
     if (article.toLowerCase() === expected) continue;
     const replacement = matchCase(article, expected);
     issues.push({
@@ -100,6 +103,7 @@ export function findIssues(text: string, opts: OfflineOptions, speller: Speller 
     ...ruleIssues(text, { style: opts.style, casual: isCasual(opts.style, opts.app) }),
     ...articleIssues(text),
     ...(speller ? spellingIssues(text, speller, new Set((opts.dictionary ?? []).map((w) => w.toLowerCase()))) : []),
+    ...(speller?.model ? confusionIssues(text, speller.model) : []),
   ].filter((i) => !overlapsAny(i.start, i.end, protectedRanges));
   return resolveOverlaps(all);
 }

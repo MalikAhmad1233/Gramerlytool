@@ -28,9 +28,10 @@ public static partial class OfflineEngine
         return h.ToString("x8", CultureInfo.InvariantCulture);
     }
 
-    private static bool StartsWithVowelSound(string word)
+    private static bool StartsWithVowelSound(string word, bool letterName = false)
     {
-        if (word.Length > 1 && !word.Any(char.IsLower)) return "AEFHILMNORSX".Contains(word[0], StringComparison.Ordinal);
+        // Acronyms and single letters are read letter by letter: "an FBI agent", "an M.A.", "an F1 car".
+        if ((word.Length > 1 || letterName) && !word.Any(char.IsLower)) return "AEFHILMNORSX".Contains(word[0], StringComparison.Ordinal);
         var w = word.ToLowerInvariant();
         if (SilentH.Any(p => w.StartsWith(p, StringComparison.Ordinal))) return true;
         if (VowelSoundUni.Any(p => w.StartsWith(p, StringComparison.Ordinal))) return true;
@@ -65,7 +66,9 @@ public static partial class OfflineEngine
             }
             if (!skip)
             {
-                var expected = StartsWithVowelSound(next) ? "an" : "a";
+                var after = m.Index + m.Length;
+                var letterName = next.Length == 1 && after < text.Length && (text[after] is '.' or '-' || char.IsAsciiDigit(text[after]));
+                var expected = StartsWithVowelSound(next, letterName) ? "an" : "a";
                 if (!article.Equals(expected, StringComparison.OrdinalIgnoreCase))
                 {
                     issues.Add(new OfflineIssue(m.Index, m.Index + article.Length, article, [RuleSet.MatchCase(article, expected)], "grammar",
@@ -105,6 +108,7 @@ public static partial class OfflineEngine
         var all = RuleSet.RuleIssues(text, options.Style, IsCasual(options.Style, options.App))
             .Concat(ArticleIssues(text))
             .Concat(speller?.Issues(text, dictionary) ?? [])
+            .Concat(speller?.Model is { } model ? ConfusionChecker.Issues(text, model) : [])
             .Where(i => !RuleSet.OverlapsAny(i.Start, i.End, protectedSpans))
             .ToList();
         return ResolveOverlaps(all);

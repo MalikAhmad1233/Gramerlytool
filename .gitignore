@@ -39,3 +39,7 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Training data (downloaded by training/fetch-data.sh; not redistributed)
+training/.data/
+training/.build/

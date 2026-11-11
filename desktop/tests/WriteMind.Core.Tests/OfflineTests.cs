@@ -37,10 +37,50 @@ public class OfflineEngineTests
         var app = c.GetProperty("app").ValueKind == JsonValueKind.Null ? null : c.GetProperty("app").GetString();
         var expected = c.GetProperty("suggestions").EnumerateArray().Select(s =>
             $"{s.GetProperty("offset").GetInt32()}+{s.GetProperty("length").GetInt32()} {s.GetProperty("rule").GetString()} " +
-            (s.GetProperty("replacement").ValueKind == JsonValueKind.Null ? "-" : s.GetProperty("replacement").GetString())).ToList();
+            string.Join("|", s.GetProperty("replacements").EnumerateArray().Select(r => r.GetString()))).ToList();
         var actual = Check(text, c.GetProperty("style").GetString()!, app).Suggestions.Select(s =>
-            $"{s.Offset}+{s.Length} {s.RuleId} {(s.RuleId == "WM_SPELLING" ? "-" : s.Replacements[0])}").ToList();
+            $"{s.Offset}+{s.Length} {s.RuleId} {string.Join("|", s.Replacements)}").ToList();
         Assert.Equal(expected, actual);
+    }
+
+    public static TheoryData<string, string> TrainedFixes()
+    {
+        using var doc = Fixture("offline-trained.json");
+        var data = new TheoryData<string, string>();
+        foreach (var pair in doc.RootElement.GetProperty("fixes").EnumerateArray()) data.Add(pair[0].GetString()!, pair[1].GetString()!);
+        return data;
+    }
+
+    public static TheoryData<string> TrainedClean()
+    {
+        using var doc = Fixture("offline-trained.json");
+        var data = new TheoryData<string>();
+        foreach (var t in doc.RootElement.GetProperty("clean").EnumerateArray()) data.Add(t.GetString()!);
+        return data;
+    }
+
+    [Theory]
+    [MemberData(nameof(TrainedFixes))]
+    public void TrainedModelFixes(string bad, string good) => Assert.True(Fixes(bad, good), string.Join("; ", Check(bad).Suggestions.Select(s => $"{s.Original}→{string.Join("/", s.Replacements)}")));
+
+    [Theory]
+    [MemberData(nameof(TrainedClean))]
+    public void TrainedModelLeavesCorrectTextAlone(string text) => Assert.Empty(Check(text).Suggestions);
+
+    [Fact]
+    public void LanguageModelRanksLikelyWordsFirst()
+    {
+        var model = LanguageModel.English;
+        Assert.True(model.Size > 60000);
+        Assert.Equal("people", Us.Suggest("peole")[0]);
+        Assert.Equal("accidentally", Us.Suggest("accidantly")[0]);
+        Assert.Equal("there", Us.Suggest("ther", null, "is")[0]);
+        Assert.True(model.EditCost("acommodate", "accommodate") < model.EditCost("acommodate", "accumulate"));
+        Assert.Equal("from", model.ConfusionCheck("form", "came", "the"));
+        var gb = Speller.For("en-GB")!;
+        Assert.Empty(OfflineEngine.Check("The colour is nice.", new OfflineOptions("en-GB", "neutral", null), gb).Suggestions);
+        var us = Check("The colour is nice.").Suggestions.Single();
+        Assert.Equal(("WM_SPELLING_VARIANT", "suggestion", "color"), (us.RuleId, us.Severity, us.Replacements[0]));
     }
 
     [Fact]

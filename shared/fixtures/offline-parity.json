@@ -10,7 +10,9 @@
      "offset": 4,
      "length": 2,
      "rule": "WM_THIRD_PERSON",
-     "replacement": "goes"
+     "replacements": [
+      "goes"
+     ]
     }
    ]
   },
@@ -23,7 +25,9 @@
      "offset": 3,
      "length": 2,
      "rule": "WM_THIRD_PERSON_DONT",
-     "replacement": "does"
+     "replacements": [
+      "does"
+     ]
     }
    ]
   },
@@ -36,7 +40,9 @@
      "offset": 2,
      "length": 8,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "received"
+     ]
     }
    ]
   },
@@ -49,7 +55,9 @@
      "offset": 0,
      "length": 5,
      "rule": "WM_THEIR_GOING",
-     "replacement": "They're"
+     "replacements": [
+      "They're"
+     ]
     }
    ]
   },
@@ -62,7 +70,9 @@
      "offset": 2,
      "length": 8,
      "rule": "WM_COULD_OF",
-     "replacement": "could have"
+     "replacements": [
+      "could have"
+     ]
     }
    ]
   },
@@ -75,7 +85,9 @@
      "offset": 23,
      "length": 4,
      "rule": "WM_ITS_POSSESSIVE",
-     "replacement": "its"
+     "replacements": [
+      "its"
+     ]
     }
    ]
   },
@@ -88,7 +100,9 @@
      "offset": 8,
      "length": 1,
      "rule": "WM_A_AN",
-     "replacement": "an"
+     "replacements": [
+      "an"
+     ]
     }
    ]
   },
@@ -101,7 +115,9 @@
      "offset": 3,
      "length": 3,
      "rule": "WM_WE_WAS",
-     "replacement": "were"
+     "replacements": [
+      "were"
+     ]
     }
    ]
   },
@@ -114,7 +130,10 @@
      "offset": 2,
      "length": 4,
      "rule": "WM_SEEN_AS_PAST",
-     "replacement": "saw"
+     "replacements": [
+      "saw",
+      "have seen"
+     ]
     }
    ]
   },
@@ -127,7 +146,9 @@
      "offset": 0,
      "length": 2,
      "rule": "WM_ME_AND",
-     "replacement": "I"
+     "replacements": [
+      "I"
+     ]
     }
    ]
   },
@@ -140,7 +161,9 @@
      "offset": 15,
      "length": 7,
      "rule": "WM_REPEATED_WORD",
-     "replacement": "the"
+     "replacements": [
+      "the"
+     ]
     }
    ]
   },
@@ -153,7 +176,9 @@
      "offset": 2,
      "length": 10,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "definitely"
+     ]
     }
    ]
   },
@@ -166,7 +191,9 @@
      "offset": 0,
      "length": 4,
      "rule": "WM_LETS",
-     "replacement": "Let's"
+     "replacements": [
+      "Let's"
+     ]
     }
    ]
   },
@@ -179,7 +206,9 @@
      "offset": 7,
      "length": 11,
      "rule": "WM_DOUBLE_COMPARATIVE",
-     "replacement": "better"
+     "replacements": [
+      "better"
+     ]
     }
    ]
   },
@@ -192,7 +221,10 @@
      "offset": 18,
      "length": 6,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "Monday",
+      "Mondays"
+     ]
     }
    ]
   },
@@ -205,7 +237,9 @@
      "offset": 21,
      "length": 7,
      "rule": "WM_LOOK_FORWARD_TO",
-     "replacement": "to hearing"
+     "replacements": [
+      "to hearing"
+     ]
     }
    ]
   },
@@ -218,7 +252,9 @@
      "offset": 7,
      "length": 11,
      "rule": "WM_DOUBLE_COMPARATIVE",
-     "replacement": "taller"
+     "replacements": [
+      "taller"
+     ]
     }
    ]
   },
@@ -231,7 +267,9 @@
      "offset": 0,
      "length": 1,
      "rule": "WM_I_LOWERCASE",
-     "replacement": "I"
+     "replacements": [
+      "I"
+     ]
     }
    ]
   },
@@ -244,7 +282,9 @@
      "offset": 6,
      "length": 2,
      "rule": "WM_THERE_IS_PLURAL",
-     "replacement": "are"
+     "replacements": [
+      "are"
+     ]
     }
    ]
   },
@@ -257,7 +297,9 @@
      "offset": 7,
      "length": 4,
      "rule": "WM_PERFECT_PARTICIPLE",
-     "replacement": "gone"
+     "replacements": [
+      "gone"
+     ]
     }
    ]
   },
@@ -270,7 +312,9 @@
      "offset": 14,
      "length": 4,
      "rule": "WM_ALOT",
-     "replacement": "a lot"
+     "replacements": [
+      "a lot"
+     ]
     }
    ]
   },
@@ -283,7 +327,9 @@
      "offset": 0,
      "length": 3,
      "rule": "WM_ITS_IT_IS",
-     "replacement": "It's"
+     "replacements": [
+      "It's"
+     ]
     }
    ]
   },
@@ -296,7 +342,9 @@
      "offset": 0,
      "length": 4,
      "rule": "WM_YOUR_WELCOME",
-     "replacement": "You're"
+     "replacements": [
+      "You're"
+     ]
     }
    ]
   },
@@ -309,7 +357,9 @@
      "offset": 7,
      "length": 11,
      "rule": "WM_THEN_THAN",
-     "replacement": "taller than"
+     "replacements": [
+      "taller than"
+     ]
     }
    ]
   },
@@ -322,7 +372,9 @@
      "offset": 7,
      "length": 4,
      "rule": "WM_LESS_FEWER",
-     "replacement": "fewer"
+     "replacements": [
+      "fewer"
+     ]
     }
    ]
   },
@@ -335,7 +387,9 @@
      "offset": 14,
      "length": 3,
      "rule": "WM_POSSESSIVE_YOUR",
-     "replacement": "your"
+     "replacements": [
+      "your"
+     ]
     }
    ]
   },
@@ -348,7 +402,9 @@
      "offset": 3,
      "length": 9,
      "rule": "WM_COULD_OF",
-     "replacement": "should have"
+     "replacements": [
+      "should have"
+     ]
     }
    ]
   },
@@ -361,7 +417,9 @@
      "offset": 11,
      "length": 4,
      "rule": "WM_NEGATION_BASE_FORM",
-     "replacement": "go"
+     "replacements": [
+      "go"
+     ]
     }
    ]
   },
@@ -374,7 +432,9 @@
      "offset": 33,
      "length": 2,
      "rule": "WM_SPACE_BEFORE_PUNCTUATION",
-     "replacement": ","
+     "replacements": [
+      ","
+     ]
     }
    ]
   },
@@ -387,7 +447,9 @@
      "offset": 16,
      "length": 6,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "until"
+     ]
     }
    ]
   },
@@ -400,7 +462,9 @@
      "offset": 5,
      "length": 3,
      "rule": "WM_WE_WAS",
-     "replacement": "were"
+     "replacements": [
+      "were"
+     ]
     }
    ]
   },
@@ -413,7 +477,9 @@
      "offset": 9,
      "length": 4,
      "rule": "WM_THIRD_PERSON",
-     "replacement": "has"
+     "replacements": [
+      "has"
+     ]
     }
    ]
   },
@@ -426,7 +492,9 @@
      "offset": 2,
      "length": 8,
      "rule": "WM_AM_AGREE",
-     "replacement": "agree"
+     "replacements": [
+      "agree"
+     ]
     }
    ]
   },
@@ -439,7 +507,10 @@
      "offset": 4,
      "length": 4,
      "rule": "WM_THIRD_PERSON_DONT_NOAPOS",
-     "replacement": "doesn't"
+     "replacements": [
+      "doesn't",
+      "don't"
+     ]
     }
    ]
   },
@@ -452,7 +523,9 @@
      "offset": 5,
      "length": 3,
      "rule": "WM_THIS_ARE",
-     "replacement": "is"
+     "replacements": [
+      "is"
+     ]
     }
    ]
   },
@@ -465,7 +538,9 @@
      "offset": 10,
      "length": 3,
      "rule": "WM_TOO_TO",
-     "replacement": "to"
+     "replacements": [
+      "to"
+     ]
     }
    ]
   },
@@ -478,7 +553,10 @@
      "offset": 4,
      "length": 5,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "dates",
+      "data"
+     ]
     }
    ]
   },
@@ -491,7 +569,9 @@
      "offset": 3,
      "length": 2,
      "rule": "WM_THIRD_PERSON",
-     "replacement": "goes"
+     "replacements": [
+      "goes"
+     ]
     }
    ]
   },
@@ -504,7 +584,9 @@
      "offset": 0,
      "length": 5,
      "rule": "WM_WHOSE",
-     "replacement": "Whose"
+     "replacements": [
+      "Whose"
+     ]
     }
    ]
   },
@@ -517,7 +599,9 @@
      "offset": 7,
      "length": 4,
      "rule": "WM_THIRD_PERSON",
-     "replacement": "knows"
+     "replacements": [
+      "knows"
+     ]
     }
    ]
   },
@@ -530,7 +614,9 @@
      "offset": 15,
      "length": 3,
      "rule": "WM_POSSESSIVE_YOUR",
-     "replacement": "your"
+     "replacements": [
+      "your"
+     ]
     }
    ]
   },
@@ -543,7 +629,9 @@
      "offset": 12,
      "length": 3,
      "rule": "WM_POSSESSIVE_YOUR",
-     "replacement": "your"
+     "replacements": [
+      "your"
+     ]
     }
    ]
   },
@@ -934,7 +1022,10 @@
      "offset": 4,
      "length": 4,
      "rule": "WM_THIRD_PERSON_DONT_NOAPOS",
-     "replacement": "doesn't"
+     "replacements": [
+      "doesn't",
+      "don't"
+     ]
     }
    ]
   },
@@ -947,7 +1038,9 @@
      "offset": 2,
      "length": 8,
      "rule": "WM_COULD_OF",
-     "replacement": "could have"
+     "replacements": [
+      "could have"
+     ]
     }
    ]
   },
@@ -960,7 +1053,9 @@
      "offset": 0,
      "length": 5,
      "rule": "WM_THEIR_GOING",
-     "replacement": "They're"
+     "replacements": [
+      "They're"
+     ]
     }
    ]
   },
@@ -973,7 +1068,9 @@
      "offset": 3,
      "length": 4,
      "rule": "WM_THIRD_PERSON",
-     "replacement": "has"
+     "replacements": [
+      "has"
+     ]
     }
    ]
   },
@@ -986,7 +1083,9 @@
      "offset": 3,
      "length": 3,
      "rule": "WM_WE_WAS",
-     "replacement": "were"
+     "replacements": [
+      "were"
+     ]
     }
    ]
   },
@@ -999,7 +1098,9 @@
      "offset": 2,
      "length": 8,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "received"
+     ]
     }
    ]
   },
@@ -1012,7 +1113,9 @@
      "offset": 0,
      "length": 3,
      "rule": "WM_ITS_IT_IS",
-     "replacement": "It's"
+     "replacements": [
+      "It's"
+     ]
     }
    ]
   },
@@ -1025,7 +1128,9 @@
      "offset": 15,
      "length": 1,
      "rule": "WM_A_AN",
-     "replacement": "an"
+     "replacements": [
+      "an"
+     ]
     }
    ]
   },
@@ -1038,7 +1143,9 @@
      "offset": 7,
      "length": 4,
      "rule": "WM_PERFECT_PARTICIPLE",
-     "replacement": "gone"
+     "replacements": [
+      "gone"
+     ]
     }
    ]
   },
@@ -1051,7 +1158,9 @@
      "offset": 7,
      "length": 12,
      "rule": "WM_DOUBLE_COMPARATIVE",
-     "replacement": "smarter"
+     "replacements": [
+      "smarter"
+     ]
     }
    ]
   },
@@ -1064,7 +1173,9 @@
      "offset": 8,
      "length": 11,
      "rule": "WM_THEN_THAN",
-     "replacement": "better than"
+     "replacements": [
+      "better than"
+     ]
     }
    ]
   },
@@ -1077,7 +1188,9 @@
      "offset": 0,
      "length": 7,
      "rule": "WM_REPEATED_WORD",
-     "replacement": "The"
+     "replacements": [
+      "The"
+     ]
     }
    ]
   },
@@ -1090,7 +1203,9 @@
      "offset": 11,
      "length": 3,
      "rule": "WM_POSSESSIVE_YOUR",
-     "replacement": "your"
+     "replacements": [
+      "your"
+     ]
     }
    ]
   },
@@ -1103,7 +1218,9 @@
      "offset": 0,
      "length": 1,
      "rule": "WM_I_LOWERCASE",
-     "replacement": "I"
+     "replacements": [
+      "I"
+     ]
     }
    ]
   },
@@ -1116,7 +1233,9 @@
      "offset": 20,
      "length": 7,
      "rule": "WM_LOOK_FORWARD_TO",
-     "replacement": "to meeting"
+     "replacements": [
+      "to meeting"
+     ]
     }
    ]
   },
@@ -1129,7 +1248,9 @@
      "offset": 0,
      "length": 3,
      "rule": "WM_ITS_IT_IS",
-     "replacement": "It's"
+     "replacements": [
+      "It's"
+     ]
     }
    ]
   },
@@ -1142,7 +1263,9 @@
      "offset": 11,
      "length": 4,
      "rule": "WM_NEGATION_BASE_FORM",
-     "replacement": "come"
+     "replacements": [
+      "come"
+     ]
     }
    ]
   },
@@ -1155,7 +1278,9 @@
      "offset": 0,
      "length": 4,
      "rule": "WM_LETS",
-     "replacement": "Let's"
+     "replacements": [
+      "Let's"
+     ]
     }
    ]
   },
@@ -1168,7 +1293,9 @@
      "offset": 5,
      "length": 3,
      "rule": "WM_WE_WAS",
-     "replacement": "were"
+     "replacements": [
+      "were"
+     ]
     }
    ]
   },
@@ -1181,7 +1308,9 @@
      "offset": 2,
      "length": 10,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "definitely"
+     ]
     }
    ]
   },
@@ -1194,7 +1323,9 @@
      "offset": 3,
      "length": 9,
      "rule": "WM_COULD_OF",
-     "replacement": "should have"
+     "replacements": [
+      "should have"
+     ]
     }
    ]
   },
@@ -1207,7 +1338,9 @@
      "offset": 0,
      "length": 4,
      "rule": "WM_YOUR_WELCOME",
-     "replacement": "You're"
+     "replacements": [
+      "You're"
+     ]
     }
    ]
   },
@@ -1220,7 +1353,9 @@
      "offset": 6,
      "length": 2,
      "rule": "WM_THERE_IS_PLURAL",
-     "replacement": "are"
+     "replacements": [
+      "are"
+     ]
     }
    ]
   },
@@ -1233,7 +1368,9 @@
      "offset": 3,
      "length": 4,
      "rule": "WM_THIRD_PERSON",
-     "replacement": "seems"
+     "replacements": [
+      "seems"
+     ]
     }
    ]
   },
@@ -1246,13 +1383,17 @@
      "offset": 2,
      "length": 3,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "will"
+     ]
     },
     {
      "offset": 15,
      "length": 8,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "tomorrow"
+     ]
     }
    ]
   },
@@ -1265,37 +1406,50 @@
      "offset": 5,
      "length": 3,
      "rule": "WM_FORMAL_CONTRACTION",
-     "replacement": "I am"
+     "replacements": [
+      "I am"
+     ]
     },
     {
      "offset": 9,
      "length": 5,
      "rule": "WM_INFORMAL_WORD",
-     "replacement": "going to"
+     "replacements": [
+      "going to"
+     ]
     },
     {
      "offset": 20,
      "length": 1,
      "rule": "WM_INFORMAL_WORD",
-     "replacement": "you"
+     "replacements": [
+      "you"
+     ]
     },
     {
      "offset": 33,
      "length": 4,
      "rule": "WM_INFORMAL_WORD_FORMAL",
-     "replacement": "as soon as possible"
+     "replacements": [
+      "as soon as possible"
+     ]
     },
     {
      "offset": 37,
      "length": 3,
      "rule": "WM_MULTIPLE_PUNCTUATION",
-     "replacement": "!"
+     "replacements": [
+      "!"
+     ]
     },
     {
      "offset": 41,
      "length": 4,
      "rule": "WM_FORMAL_CONTRACTION",
-     "replacement": "It has"
+     "replacements": [
+      "It has",
+      "It is"
+     ]
     }
    ]
   },
@@ -1308,19 +1462,25 @@
      "offset": 9,
      "length": 5,
      "rule": "WM_INFORMAL_WORD",
-     "replacement": "going to"
+     "replacements": [
+      "going to"
+     ]
     },
     {
      "offset": 20,
      "length": 1,
      "rule": "WM_INFORMAL_WORD",
-     "replacement": "you"
+     "replacements": [
+      "you"
+     ]
     },
     {
      "offset": 37,
      "length": 3,
      "rule": "WM_MULTIPLE_PUNCTUATION",
-     "replacement": "!"
+     "replacements": [
+      "!"
+     ]
     }
    ]
   },
@@ -1333,19 +1493,25 @@
      "offset": 0,
      "length": 3,
      "rule": "WM_SENTENCE_START",
-     "replacement": "Hey"
+     "replacements": [
+      "Hey"
+     ]
     },
     {
      "offset": 28,
      "length": 1,
      "rule": "WM_I_LOWERCASE",
-     "replacement": "I"
+     "replacements": [
+      "I"
+     ]
     },
     {
      "offset": 36,
      "length": 3,
      "rule": "WM_ITS_IT_IS",
-     "replacement": "it's"
+     "replacements": [
+      "it's"
+     ]
     }
    ]
   },
@@ -1358,13 +1524,17 @@
      "offset": 28,
      "length": 1,
      "rule": "WM_I_LOWERCASE",
-     "replacement": "I"
+     "replacements": [
+      "I"
+     ]
     },
     {
      "offset": 36,
      "length": 3,
      "rule": "WM_ITS_IT_IS",
-     "replacement": "it's"
+     "replacements": [
+      "it's"
+     ]
     }
    ]
   },
@@ -1377,37 +1547,895 @@
      "offset": 18,
      "length": 8,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "received"
+     ]
     },
     {
      "offset": 27,
      "length": 3,
      "rule": "WM_SPELLING",
-     "replacement": null
+     "replacements": [
+      "the"
+     ]
     },
     {
      "offset": 36,
      "length": 1,
      "rule": "WM_MISSING_SPACE",
-     "replacement": ", "
+     "replacements": [
+      ", "
+     ]
     },
     {
      "offset": 43,
      "length": 1,
      "rule": "WM_MISSING_SPACE_PERIOD",
-     "replacement": ". "
+     "replacements": [
+      ". "
+     ]
     },
     {
      "offset": 53,
      "length": 2,
      "rule": "WM_DOUBLE_SPACE",
-     "replacement": " "
+     "replacements": [
+      " "
+     ]
     },
     {
      "offset": 62,
      "length": 2,
      "rule": "WM_SPACE_BEFORE_PUNCTUATION",
-     "replacement": "."
+     "replacements": [
+      "."
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I am form Pakistan.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 5,
+     "length": 4,
+     "rule": "WM_FORM_FROM",
+     "replacements": [
+      "from"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "He is taller then me.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 6,
+     "length": 11,
+     "rule": "WM_THEN_THAN",
+     "replacements": [
+      "taller than"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Dose he know the answer?",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 0,
+     "length": 4,
+     "rule": "WM_CONFUSED_WORD",
+     "replacements": [
+      "Does"
+     ]
+    },
+    {
+     "offset": 8,
+     "length": 4,
+     "rule": "WM_THIRD_PERSON",
+     "replacements": [
+      "knows"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I will meat you tomorrow.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 7,
+     "length": 4,
+     "rule": "WM_CONFUSED_WORD",
+     "replacements": [
+      "meet"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Give me some informations about the course.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 13,
+     "length": 12,
+     "rule": "WM_UNCOUNTABLE",
+     "replacements": [
+      "information"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "We will discuss about the project tomorrow.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 8,
+     "length": 13,
+     "rule": "WM_DISCUSS_ABOUT",
+     "replacements": [
+      "discuss"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "One of my friend lives in Lahore.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 10,
+     "length": 6,
+     "rule": "WM_ONE_OF_PLURAL",
+     "replacements": [
+      "friends"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I have been working here since two years.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 25,
+     "length": 5,
+     "rule": "WM_SINCE_FOR",
+     "replacements": [
+      "for"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Myself Ahmed from Karachi.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 0,
+     "length": 6,
+     "rule": "WM_MYSELF_NAME",
+     "replacements": [
+      "I am",
+      "My name is"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I can able to finish it today.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 2,
+     "length": 11,
+     "rule": "WM_CAN_ABLE",
+     "replacements": [
+      "can"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "They has finished the work.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 5,
+     "length": 3,
+     "rule": "WM_PLURAL_HAS",
+     "replacements": [
+      "have"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "People is waiting outside.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 7,
+     "length": 2,
+     "rule": "WM_PEOPLE_IS",
+     "replacements": [
+      "are"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I am going to home now.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 5,
+     "length": 13,
+     "rule": "WM_GO_TO_HOME",
+     "replacements": [
+      "going home"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "However we decided to wait.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 0,
+     "length": 7,
+     "rule": "WM_INTRO_COMMA",
+     "replacements": [
+      "However,"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I will call you today morning.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 16,
+     "length": 13,
+     "rule": "WM_TODAY_MORNING",
+     "replacements": [
+      "this morning"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Please explain me the process.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 7,
+     "length": 10,
+     "rule": "WM_EXPLAIN_ME",
+     "replacements": [
+      "explain to me"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "There are many student in the class.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 15,
+     "length": 7,
+     "rule": "WM_MANY_PLURAL",
+     "replacements": [
+      "students"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Each students has a laptop.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 5,
+     "length": 8,
+     "rule": "WM_EACH_SINGULAR",
+     "replacements": [
+      "student"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I use to play cricket every day.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 2,
+     "length": 3,
+     "rule": "WM_USED_TO",
+     "replacements": [
+      "used"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "He is suppose to arrive at noon.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 6,
+     "length": 7,
+     "rule": "WM_SUPPOSED_TO",
+     "replacements": [
+      "supposed"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Kindly do the needful.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 7,
+     "length": 14,
+     "rule": "WM_DO_THE_NEEDFUL",
+     "replacements": [
+      "do what is needed",
+      "take care of this"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I recieved the documnet yesterday.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 2,
+     "length": 8,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "received"
+     ]
+    },
+    {
+     "offset": 15,
+     "length": 8,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "document",
+      "documents"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Please check the atachment.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 17,
+     "length": 9,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "attachment",
+      "attachments"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "We care about the inviroment.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 18,
+     "length": 10,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "environment"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I was late becuase of traffic.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 11,
+     "length": 7,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "because"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "We need to invite more peple.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 23,
+     "length": 5,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "people"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "I live in a hous near the park.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 12,
+     "length": 4,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "house",
+      "hours"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "My naame is Ahmed.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 3,
+     "length": 5,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "name"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "It was a wonderfull day.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 9,
+     "length": 10,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "wonderful",
+      "wonderfully"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "This is very importand for us.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 13,
+     "length": 9,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "important"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Wellcome to the team.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 0,
+     "length": 8,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "Welcome",
+      "Welcomed"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "The colour is nice.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 4,
+     "length": 6,
+     "rule": "WM_SPELLING_VARIANT",
+     "replacements": [
+      "color"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "There is a reason they left early.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "He paid attention to every detail.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "The children are playing in the garden.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "One of the main reasons is cost.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "The decision was made by the board.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "Dündar said the talks went well.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "An F1 car is very fast.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "He obtained an M.A. in 1999.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "The U.S. president visited Paris in May.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "I'd rather walk than drive.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "The weather was nice, so we went to the beach.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "She couldn't decide whether to stay.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "Our team is ready.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "It's been a long week, and I'm tired.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "Then we went home and had dinner.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "Children form friendships quickly at school.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "We bought shockwave sensors and a frontline kit.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "Seagal starred in many action films, and Seagal still acts.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "Where were you yesterday?",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "I know there is no time left.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "They were referred to by their first names.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "Can you send me the report by Friday?",
+   "style": "neutral",
+   "app": null,
+   "suggestions": []
+  },
+  {
+   "text": "My naame is ahmed& I'm yourr aducalnal",
+   "style": "neutral",
+   "app": "whatsapp",
+   "suggestions": [
+    {
+     "offset": 3,
+     "length": 5,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "name"
+     ]
+    },
+    {
+     "offset": 12,
+     "length": 5,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "Ahmed",
+      "aimed",
+      "named",
+      "Ahmad"
+     ]
+    },
+    {
+     "offset": 23,
+     "length": 5,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "your",
+      "yours"
+     ]
+    },
+    {
+     "offset": 29,
+     "length": 9,
+     "rule": "WM_SPELLING",
+     "replacements": []
+    }
+   ]
+  },
+  {
+   "text": "i dont now wat to do, plz tell me were to go and wich form to fil",
+   "style": "neutral",
+   "app": "whatsapp",
+   "suggestions": [
+    {
+     "offset": 0,
+     "length": 1,
+     "rule": "WM_I_LOWERCASE",
+     "replacements": [
+      "I"
+     ]
+    },
+    {
+     "offset": 2,
+     "length": 4,
+     "rule": "WM_MISSING_APOSTROPHE",
+     "replacements": [
+      "don't"
+     ]
+    },
+    {
+     "offset": 11,
+     "length": 3,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "what",
+      "want",
+      "was"
+     ]
+    },
+    {
+     "offset": 49,
+     "length": 4,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "which"
+     ]
+    },
+    {
+     "offset": 62,
+     "length": 3,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "fill",
+      "file",
+      "fail",
+      "film"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "Dear sir, kindly revert back at the earliest. Myself Ahmed and I am working here since 5 years.",
+   "style": "professional",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 17,
+     "length": 11,
+     "rule": "WM_DISCUSS_ABOUT",
+     "replacements": [
+      "revert"
+     ]
+    },
+    {
+     "offset": 46,
+     "length": 6,
+     "rule": "WM_MYSELF_NAME",
+     "replacements": [
+      "I am",
+      "My name is"
+     ]
+    },
+    {
+     "offset": 81,
+     "length": 5,
+     "rule": "WM_SINCE_FOR",
+     "replacements": [
+      "for"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "However the informations was wrong and their was no time to discuss about it today morning.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 0,
+     "length": 7,
+     "rule": "WM_INTRO_COMMA",
+     "replacements": [
+      "However,"
+     ]
+    },
+    {
+     "offset": 12,
+     "length": 12,
+     "rule": "WM_UNCOUNTABLE",
+     "replacements": [
+      "information"
+     ]
+    },
+    {
+     "offset": 39,
+     "length": 5,
+     "rule": "WM_THEIR_IS",
+     "replacements": [
+      "there"
+     ]
+    },
+    {
+     "offset": 60,
+     "length": 13,
+     "rule": "WM_DISCUSS_ABOUT",
+     "replacements": [
+      "discuss"
+     ]
+    },
+    {
+     "offset": 77,
+     "length": 13,
+     "rule": "WM_TODAY_MORNING",
+     "replacements": [
+      "this morning"
+     ]
+    }
+   ]
+  },
+  {
+   "text": "He go to school every day, but yesterday he didnt went becuase he was sick.",
+   "style": "neutral",
+   "app": null,
+   "suggestions": [
+    {
+     "offset": 3,
+     "length": 2,
+     "rule": "WM_THIRD_PERSON",
+     "replacements": [
+      "goes"
+     ]
+    },
+    {
+     "offset": 44,
+     "length": 5,
+     "rule": "WM_MISSING_APOSTROPHE",
+     "replacements": [
+      "didn't"
+     ]
+    },
+    {
+     "offset": 50,
+     "length": 4,
+     "rule": "WM_NEGATION_BASE_FORM",
+     "replacements": [
+      "go"
+     ]
+    },
+    {
+     "offset": 55,
+     "length": 7,
+     "rule": "WM_SPELLING",
+     "replacements": [
+      "because"
+     ]
     }
    ]
   }

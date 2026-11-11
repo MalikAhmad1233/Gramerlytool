@@ -32,6 +32,7 @@ export default defineConfig({
           files.push({ absoluteSrc: resolve(SHARED, 'dictionaries', `${lang}.${ext}`), relativeDest: `dict/${lang}.${ext}` });
         }
       }
+      files.push({ absoluteSrc: resolve(SHARED, 'model', 'en.model.txt'), relativeDest: 'model/en.model.txt' });
     },
   },
 });

@@ -45,6 +45,7 @@ public sealed record RuleData
     public required IReadOnlyList<string> ChatApps { get; init; }
     public required IReadOnlyList<string> Protect { get; init; }
     public required IReadOnlyList<string> AllowWords { get; init; }
+    public IReadOnlyList<string> NameParticles { get; init; } = [];
     public required IReadOnlyDictionary<string, string> Typos { get; init; }
     public required IReadOnlyDictionary<string, IReadOnlyDictionary<string, JsonElement>> Maps { get; init; }
     public required IReadOnlyList<RuleDef> Rules { get; init; }

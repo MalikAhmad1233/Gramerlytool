@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url';
 import accuracy from '../../shared/fixtures/accuracy-en.json';
 import heldout from '../../shared/fixtures/offline-heldout.json';
 import { checkOffline } from '../src/offline/engine';
+import trained from '../../shared/fixtures/offline-trained.json';
+import { LanguageModel } from '../src/offline/model';
 import { Speller } from '../src/offline/speller';
 import type { Style } from '../src/shared/types';
 
@@ -16,6 +18,7 @@ const PARITY = join(ROOT, 'fixtures', 'offline-parity.json');
 const speller = new Speller(
   readFileSync(join(ROOT, 'dictionaries', 'en-US.aff'), 'utf8'),
   readFileSync(join(ROOT, 'dictionaries', 'en-US.dic'), 'utf8'),
+  LanguageModel.parse(readFileSync(join(ROOT, 'model', 'en.model.txt'), 'utf8')),
 );
 
 type Case = { text: string; style: Style; app: string | null };
@@ -30,6 +33,13 @@ const cases: Case[] = [
   { text: 'hey are you coming tonight. i think its late', style: 'neutral', app: null },
   { text: 'hey are you coming tonight. i think its late', style: 'neutral', app: 'whatsapp' },
   { text: 'Great news 😀 — I recieved teh files,thanks.Next week  we meet .', style: 'neutral', app: null },
+  ...trained.fixes.map(([text]) => ({ text: text!, style: 'neutral' as Style, app: null })),
+  ...trained.clean.map((text) => ({ text, style: 'neutral' as Style, app: null })),
+  { text: 'My naame is ahmed& I\'m yourr aducalnal', style: 'neutral', app: 'whatsapp' },
+  { text: 'i dont now wat to do, plz tell me were to go and wich form to fil', style: 'neutral', app: 'whatsapp' },
+  { text: 'Dear sir, kindly revert back at the earliest. Myself Ahmed and I am working here since 5 years.', style: 'professional', app: null },
+  { text: 'However the informations was wrong and their was no time to discuss about it today morning.', style: 'neutral', app: null },
+  { text: 'He go to school every day, but yesterday he didnt went becuase he was sick.', style: 'neutral', app: null },
 ];
 
 function run(c: Case) {
@@ -37,8 +47,8 @@ function run(c: Case) {
     offset: s.offset,
     length: s.length,
     rule: s.rule_id,
-    // Hunspell suggestion order may differ between nspell and WeCantSpell; rules must match exactly.
-    replacement: s.rule_id === 'WM_SPELLING' ? null : (s.replacements[0] ?? null),
+    // Every suggestion, spelling included, comes from shared rules and the shared trained model.
+    replacements: s.replacements,
   }));
 }
 

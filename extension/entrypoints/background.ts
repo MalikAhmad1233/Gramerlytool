@@ -1,6 +1,7 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
 import { checkOffline, rewriteOffline } from '../src/offline/engine';
+import { GB, LanguageModel, US } from '../src/offline/model';
 import { Speller } from '../src/offline/speller';
 import { apiRequest } from '../src/shared/api';
 import type { Envelope, Request, StatusResponse } from '../src/shared/messages';
@@ -17,6 +18,7 @@ const SERVER_RETRY_MS = 30_000;
 export default defineBackground(() => {
   const inflight = new Map<string, AbortController>();
   const spellers = new Map<string, Promise<Speller | null>>();
+  let model: Promise<LanguageModel | null> | null = null;
   let serverDownUntil = 0;
   let lastStatus: StatusResponse = { engine: 'builtin', aiAvailable: false };
   let feedbackQueue: FeedbackEvent[] = [];
@@ -25,6 +27,18 @@ export default defineBackground(() => {
   /** British-style spelling for en-GB/AU/NZ/ZA, American for the rest. */
   function dictionaryFor(language: string): string {
     return /^en-(GB|AU|NZ|ZA)$/i.test(language) ? 'en-GB' : 'en-US';
+  }
+
+  /** WriteMind's trained language model (shared/model), loaded once and shared by both dictionaries. */
+  function languageModel(): Promise<LanguageModel | null> {
+    model ??= fetch(assetUrl('/model/en.model.txt'))
+      .then((r) => r.text())
+      .then((text) => LanguageModel.parse(text))
+      .catch(() => {
+        model = null;
+        return null;
+      });
+    return model;
   }
 
   function speller(language: string): Promise<Speller | null> {
@@ -37,7 +51,7 @@ export default defineBackground(() => {
           const [aff, dic] = await Promise.all(
             ['aff', 'dic'].map((ext) => fetch(assetUrl(`/dict/${name}.${ext}`)).then((r) => r.text())),
           );
-          return new Speller(aff!, dic!);
+          return new Speller(aff!, dic!, await languageModel(), name === 'en-GB' ? GB : US);
         } catch {
           spellers.delete(name);
           return null;
@@ -225,6 +239,6 @@ export default defineBackground(() => {
 
   browser.runtime.onInstalled.addListener(({ reason }) => {
     if (reason === 'install' || reason === 'update') void injectIntoOpenTabs();
-    if (reason === 'install') void browser.runtime.openOptionsPage();
+    if (reason === 'install') void browser.tabs.create({ url: assetUrl('/welcome.html') });
   });
 });
