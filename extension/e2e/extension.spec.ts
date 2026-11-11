@@ -19,6 +19,10 @@ const test = base.extend<{ context: BrowserContext; page: Page }>({
       args: [`--disable-extensions-except=${EXTENSION}`, `--load-extension=${EXTENSION}`],
     });
     if (!context.serviceWorkers().length) await context.waitForEvent('serviceworker');
+    // A fresh install opens the welcome/options tab; wait for it so it cannot hijack a test's navigation.
+    for (let i = 0; i < 50 && !context.pages().some((p) => p.url().includes('options.html')); i++) {
+      await new Promise((r) => setTimeout(r, 100));
+    }
     await use(context);
     await context.close();
   },
@@ -158,37 +162,58 @@ test('rewrite: alternatives in a chosen style replace the selection only on clic
   await expect(ta).toHaveValue('Hello, can you send me the report as soon as possible?');
 });
 
-test('account: register in Options, dictionary syncs to the server and silences that word', async ({ context, page }) => {
+/** Points the extension at an address where no WriteMind server runs — like a fresh install on a user's PC. */
+async function withoutServer(context: BrowserContext): Promise<string> {
   let [sw] = context.serviceWorkers();
   sw ??= await context.waitForEvent('serviceworker');
-  const extensionId = sw.url().split('/')[2];
-  const email = `e2e-${Date.now()}@example.com`;
+  await sw.evaluate(() => chrome.storage.local.set({ settings: { apiBaseUrl: 'http://127.0.0.1:9' } }));
+  return sw.url().split('/')[2]!;
+}
 
+test('no server: the built-in checker underlines and fixes errors', async ({ context, page }) => {
+  await withoutServer(context);
+  await page.goto(`${PAGES}/textarea.html`);
+  await page.bringToFront();
+  const ta = page.locator('#ta');
+  const text = 'She go to school and I recieved teh files.';
+  await ta.click();
+  await ta.pressSequentially(text, { delay: 10 });
+  await expect.poll(() => underlineCount(page)).toBe(3);
+  await expect(page.getByTestId('wm-badge')).not.toHaveClass(/offline/);
+  await page.waitForTimeout(2000);
+  await expect(ta).toHaveValue(text); // still never edits on its own
+
+  await (await acceptButtonFor(page, 'goes')).click();
+  await expect(ta).toHaveValue('She goes to school and I recieved teh files.');
+  await (await acceptButtonFor(page, 'the')).click();
+  await expect(ta).toHaveValue('She goes to school and I recieved the files.');
+});
+
+test('no server: rewrite and the popup still work', async ({ context, page }) => {
+  const extensionId = await withoutServer(context);
+  await page.goto(`${PAGES}/textarea.html`);
+  await page.bringToFront();
+  const ta = page.locator('#ta');
+  await ta.click();
+  await ta.pressSequentially('hey can u send me the report asap', { delay: 5 });
+  await page.getByTestId('wm-badge').waitFor();
+  await ta.focus();
+  await page.keyboard.press('Control+a');
+  await page.getByTestId('wm-badge').click();
+  await page.getByTestId('wm-tab-rewrite').click();
+  await page.getByRole('radio', { name: 'Formal' }).click();
+  await page.getByTestId('wm-generate').click();
+  const alternative = page.getByTestId('wm-alternative').first();
+  await expect(alternative).toContainText('Hello, can you send me the report as soon as possible?');
+  await alternative.getByTestId('wm-replace').click();
+  await expect(ta).toHaveValue('Hello, can you send me the report as soon as possible?');
+
+  const popup = await context.newPage();
+  await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+  await expect(popup.getByTestId('engine-status')).toContainText('built-in checker');
+  await expect(popup.getByText(/sign in|sign up|log in/i)).toHaveCount(0);
   const options = await context.newPage();
   await options.goto(`chrome-extension://${extensionId}/options.html`);
-  await options.getByRole('button', { name: 'Create an account' }).click();
-  await options.getByPlaceholder('you@example.com').fill(email);
-  await options.getByPlaceholder(/Password/).fill('Writer#2026');
-  await options.getByRole('button', { name: 'Create account' }).click();
-  await expect(options.getByText(email, { exact: true })).toBeVisible();
-
-  const dictionary = options.locator('section', { hasText: 'Personal dictionary' });
-  await dictionary.getByPlaceholder('Add a word, e.g. Kubernetes').fill('Ahmadzai');
-  await dictionary.getByRole('button', { name: 'Add', exact: true }).click();
-  await expect(options.locator('.tag', { hasText: 'Ahmadzai' })).toBeVisible();
-
-  // The word reached the server-side dictionary.
-  const auth = await sw.evaluate(async () => (await chrome.storage.local.get('auth')).auth as { accessToken: string });
-  await expect
-    .poll(async () => {
-      const res = await fetch('http://localhost:8000/v1/dictionary', { headers: { Authorization: `Bearer ${auth.accessToken}` } });
-      return ((await res.json()) as { words: string[] }).words;
-    })
-    .toContain('Ahmadzai');
-
-  await page.bringToFront();
-  await page.goto(`${PAGES}/textarea.html`);
-  await page.locator('#ta').click();
-  await page.locator('#ta').pressSequentially('Ahmadzai recieved the files.', { delay: 5 });
-  await expect.poll(() => underlineCount(page)).toBe(1); // only "recieved"
+  await expect(options.getByTestId('engine-status')).toContainText('built-in checker');
+  await expect(options.getByText(/sign in|sign up|create account|log in/i)).toHaveCount(0);
 });

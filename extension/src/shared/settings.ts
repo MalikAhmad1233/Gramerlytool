@@ -1,5 +1,5 @@
 import { storage } from 'wxt/utils/storage';
-import type { Category, Style, UserOut } from './types';
+import type { Category, Style } from './types';
 import { CATEGORIES } from './types';
 
 export interface LocalSettings {
@@ -26,13 +26,6 @@ export const DEFAULT_SETTINGS: LocalSettings = {
   dictionary: [],
 };
 
-export interface AuthState {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number; // epoch ms
-  user: UserOut;
-}
-
 export interface LocalStats {
   day: string; // YYYY-MM-DD
   checks: number;
@@ -43,7 +36,6 @@ export interface LocalStats {
 export const settingsItem = storage.defineItem<LocalSettings>('local:settings', {
   fallback: DEFAULT_SETTINGS,
 });
-export const authItem = storage.defineItem<AuthState | null>('local:auth', { fallback: null });
 export const statsItem = storage.defineItem<LocalStats | null>('local:stats', { fallback: null });
 
 export async function getSettings(): Promise<LocalSettings> {

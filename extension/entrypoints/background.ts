@@ -1,80 +1,108 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
-import { ApiClient, storeTokens } from '../src/shared/api';
+import { checkOffline, rewriteOffline } from '../src/offline/engine';
+import { Speller } from '../src/offline/speller';
+import { apiRequest } from '../src/shared/api';
 import type { Envelope, Request, StatusResponse } from '../src/shared/messages';
 import { WriteMindError } from '../src/shared/messages';
-import { authItem, bumpStats, getSettings, updateSettings } from '../src/shared/settings';
-import type {
-  CheckResponse,
-  FeedbackEvent,
-  RemoteSettings,
-  RewriteResponse,
-  TokenPair,
-  UsageSummary,
-} from '../src/shared/types';
+import { bumpStats, getSettings, updateSettings } from '../src/shared/settings';
+import type { CheckRequest, CheckResponse, FeedbackEvent, RewriteRequest, RewriteResponse } from '../src/shared/types';
+
+/** Dictionaries are added to the package by a build hook, so they are not in WXT's generated path type. */
+const assetUrl = (path: string): string => (browser.runtime.getURL as (p: string) => string)(path);
+
+/** After a failed attempt, use the built-in checker for this long before trying the server again. */
+const SERVER_RETRY_MS = 30_000;
 
 export default defineBackground(() => {
-  const api = new ApiClient();
   const inflight = new Map<string, AbortController>();
+  const spellers = new Map<string, Promise<Speller | null>>();
+  let serverDownUntil = 0;
+  let lastStatus: StatusResponse = { engine: 'builtin', aiAvailable: false };
   let feedbackQueue: FeedbackEvent[] = [];
   let feedbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** British-style spelling for en-GB/AU/NZ/ZA, American for the rest. */
+  function dictionaryFor(language: string): string {
+    return /^en-(GB|AU|NZ|ZA)$/i.test(language) ? 'en-GB' : 'en-US';
+  }
+
+  function speller(language: string): Promise<Speller | null> {
+    if (!language.toLowerCase().startsWith('en')) return Promise.resolve(null);
+    const name = dictionaryFor(language);
+    let loading = spellers.get(name);
+    if (!loading) {
+      loading = (async () => {
+        try {
+          const [aff, dic] = await Promise.all(
+            ['aff', 'dic'].map((ext) => fetch(assetUrl(`/dict/${name}.${ext}`)).then((r) => r.text())),
+          );
+          return new Speller(aff!, dic!);
+        } catch {
+          spellers.delete(name);
+          return null;
+        }
+      })();
+      spellers.set(name, loading);
+    }
+    return loading;
+  }
+
+  function serverAvailable(): boolean {
+    return Date.now() >= serverDownUntil;
+  }
+
+  function markServer(up: boolean, aiAvailable = lastStatus.aiAvailable): void {
+    if (!up) serverDownUntil = Date.now() + SERVER_RETRY_MS;
+    lastStatus = { engine: up ? 'server' : 'builtin', aiAvailable: up && aiAvailable };
+  }
+
+  async function check(payload: CheckRequest, signal: AbortSignal): Promise<CheckResponse> {
+    if (serverAvailable()) {
+      try {
+        const result = await apiRequest<CheckResponse>('/v1/check', {
+          body: payload,
+          signal,
+          timeoutMs: payload.mode === 'fast' ? 4_000 : 10_000,
+        });
+        markServer(true, result.engine.ai !== 'unavailable');
+        return result;
+      } catch (err) {
+        if (!(err instanceof WriteMindError) || !['offline', 'timeout'].includes(err.code)) throw err;
+        markServer(false);
+      }
+    }
+    // Built-in checker: no server, no account, nothing leaves the browser.
+    return checkOffline(
+      payload.text,
+      { language: payload.language, style: payload.style, app: payload.client.app, mode: payload.mode, dictionary: payload.dictionary },
+      await speller(payload.language),
+    );
+  }
+
+  async function rewrite(payload: RewriteRequest): Promise<RewriteResponse> {
+    if (serverAvailable()) {
+      try {
+        const result = await apiRequest<RewriteResponse>('/v1/rewrite', { body: payload });
+        markServer(true);
+        return result;
+      } catch (err) {
+        if (!(err instanceof WriteMindError) || !['offline', 'timeout'].includes(err.code)) throw err;
+        markServer(false);
+      }
+    }
+    return rewriteOffline(payload.text, payload.style, payload.count, payload.language, await speller(payload.language));
+  }
 
   async function flushFeedback(): Promise<void> {
     feedbackTimer = null;
     const events = feedbackQueue.splice(0, 50);
-    if (!events.length) return;
+    if (!events.length || !serverAvailable()) return;
     try {
-      await api.request('/v1/feedback', { body: { client: 'chrome-extension', events } });
+      await apiRequest('/v1/feedback', { body: { client: 'chrome-extension', events } });
     } catch {
-      /* feedback is best-effort and contains no text */
+      /* anonymous quality signal only; never essential */
     }
-    if (feedbackQueue.length) feedbackTimer = setTimeout(flushFeedback, 1000);
-  }
-
-  async function syncFromServer(): Promise<void> {
-    const auth = await authItem.getValue();
-    if (!auth) return;
-    const [remote, dict] = await Promise.all([
-      api.request<RemoteSettings>('/v1/settings', { auth: 'required' }),
-      api.request<{ words: string[] }>('/v1/dictionary', { auth: 'required' }),
-    ]);
-    const local = await getSettings();
-    const words = new Map<string, string>();
-    for (const w of [...local.dictionary, ...dict.words]) words.set(w.toLowerCase(), w);
-    // Push words added while signed out.
-    for (const w of local.dictionary) {
-      if (!dict.words.some((d) => d.toLowerCase() === w.toLowerCase())) {
-        await api.request('/v1/dictionary', { body: { word: w }, auth: 'required' }).catch(() => undefined);
-      }
-    }
-    await updateSettings({
-      language: remote.language,
-      style: remote.default_style,
-      aiEnabled: remote.ai_enabled,
-      categories: remote.enabled_categories,
-      ignoredRules: Array.from(new Set([...local.ignoredRules, ...remote.disabled_rules])),
-      disabledSites: Array.from(new Set([...local.disabledSites, ...remote.disabled_sites])),
-      dictionary: Array.from(words.values()).sort((a, b) => a.localeCompare(b)),
-    });
-  }
-
-  async function pushSettings(): Promise<void> {
-    if (!(await authItem.getValue())) return;
-    const s = await getSettings();
-    await api
-      .request('/v1/settings', {
-        method: 'PUT',
-        auth: 'required',
-        body: {
-          language: s.language,
-          default_style: s.style,
-          ai_enabled: s.aiEnabled,
-          enabled_categories: s.categories,
-          disabled_rules: s.ignoredRules,
-          disabled_sites: s.disabledSites,
-        },
-      })
-      .catch(() => undefined);
   }
 
   async function handle(msg: Request, sender: { tab?: { id?: number } }): Promise<unknown> {
@@ -85,7 +113,7 @@ export default defineBackground(() => {
         const controller = new AbortController();
         inflight.set(key, controller);
         try {
-          const result = await api.request<CheckResponse>('/v1/check', { body: msg.payload, signal: controller.signal });
+          const result = await check(msg.payload, controller.signal);
           if (msg.payload.mode === 'fast') await bumpStats({ checks: 1 });
           return result;
         } finally {
@@ -93,15 +121,15 @@ export default defineBackground(() => {
         }
       }
       case 'rewrite':
-        return api.request<RewriteResponse>('/v1/rewrite', { body: msg.payload });
+        return rewrite(msg.payload);
       case 'feedback': {
-        feedbackQueue.push(...msg.events);
         await bumpStats({
           accepted: msg.events.filter((e) => e.action === 'accepted').length,
           ignored: msg.events.filter((e) => e.action !== 'accepted').length,
         });
-        if (feedbackQueue.length >= 20) await flushFeedback();
-        else feedbackTimer ??= setTimeout(flushFeedback, 5000);
+        feedbackQueue.push(...msg.events);
+        feedbackQueue = feedbackQueue.slice(-200);
+        feedbackTimer ??= setTimeout(flushFeedback, 5000);
         return null;
       }
       case 'dictionary.add': {
@@ -109,19 +137,11 @@ export default defineBackground(() => {
         if (!s.dictionary.some((w) => w.toLowerCase() === msg.word.toLowerCase())) {
           await updateSettings({ dictionary: [...s.dictionary, msg.word].sort((a, b) => a.localeCompare(b)) });
         }
-        if (await authItem.getValue()) {
-          await api.request('/v1/dictionary', { body: { word: msg.word }, auth: 'required' }).catch(() => undefined);
-        }
         return null;
       }
       case 'dictionary.remove': {
         const s = await getSettings();
         await updateSettings({ dictionary: s.dictionary.filter((w) => w.toLowerCase() !== msg.word.toLowerCase()) });
-        if (await authItem.getValue()) {
-          await api
-            .request(`/v1/dictionary/${encodeURIComponent(msg.word)}`, { method: 'DELETE', auth: 'required' })
-            .catch(() => undefined);
-        }
         return null;
       }
       case 'rule.disable':
@@ -131,54 +151,17 @@ export default defineBackground(() => {
         if (msg.type === 'rule.disable') rules.add(msg.ruleId);
         else rules.delete(msg.ruleId);
         await updateSettings({ ignoredRules: Array.from(rules) });
-        await pushSettings();
         return null;
       }
-      case 'auth.login':
-      case 'auth.register': {
-        const pair = await api.request<TokenPair>(msg.type === 'auth.login' ? '/v1/auth/login' : '/v1/auth/register', {
-          auth: 'none',
-          body:
-            msg.type === 'auth.login'
-              ? { email: msg.email, password: msg.password, client: 'chrome-extension' }
-              : { email: msg.email, password: msg.password, display_name: msg.displayName, client: 'chrome-extension' },
-        });
-        await storeTokens(pair);
-        if (msg.type === 'auth.register') await pushSettings();
-        await syncFromServer().catch(() => undefined);
-        return pair.user;
-      }
-      case 'auth.logout': {
-        const auth = await authItem.getValue();
-        if (auth) {
-          await api
-            .request('/v1/auth/logout', { body: { refresh_token: auth.refreshToken }, auth: 'none' })
-            .catch(() => undefined);
-        }
-        await authItem.setValue(null);
-        return null;
-      }
-      case 'account.export':
-        return api.request('/v1/me/export', { auth: 'required' });
-      case 'account.delete':
-        await api.request('/v1/me', { method: 'DELETE', body: { password: msg.password }, auth: 'required' });
-        await authItem.setValue(null);
-        return null;
-      case 'sync':
-        await syncFromServer();
-        await pushSettings();
-        return null;
-      case 'usage':
-        if (!(await authItem.getValue())) return null;
-        return api.request<UsageSummary>('/v1/usage/summary?days=7', { auth: 'required' }).catch(() => null);
       case 'status': {
-        const auth = await authItem.getValue();
         try {
-          const meta = await api.request<{ ai_available: boolean }>('/v1/meta', { auth: 'none' });
-          return { backend: 'ok', aiAvailable: meta.ai_available, user: auth?.user ?? null } satisfies StatusResponse;
+          const meta = await apiRequest<{ ai_available: boolean }>('/v1/meta', { timeoutMs: 3_000 });
+          serverDownUntil = 0;
+          markServer(true, meta.ai_available);
         } catch {
-          return { backend: 'offline', aiAvailable: false, user: auth?.user ?? null } satisfies StatusResponse;
+          markServer(false);
         }
+        return lastStatus satisfies StatusResponse;
       }
       case 'badge': {
         const tabId = sender.tab?.id;
@@ -213,5 +196,4 @@ export default defineBackground(() => {
   browser.runtime.onInstalled.addListener(({ reason }) => {
     if (reason === 'install') void browser.runtime.openOptionsPage();
   });
-  browser.runtime.onStartup.addListener(() => void syncFromServer().catch(() => undefined));
 });

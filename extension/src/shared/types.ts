@@ -56,7 +56,7 @@ export interface CheckResponse {
     score: number;
   };
   engine: {
-    languagetool: 'ok' | 'error';
+    languagetool: 'ok' | 'error' | 'builtin';
     ai: 'used' | 'skipped' | 'disabled' | 'unavailable' | 'error';
     paragraphs_checked: number;
     paragraphs_cached: number;
@@ -85,45 +85,6 @@ export interface RewriteResponse {
   alternatives: RewriteAlternative[];
   engine: 'ai' | 'rules';
   latency_ms: number;
-}
-
-export interface UserOut {
-  id: string;
-  email: string;
-  display_name: string | null;
-  plan: string;
-  created_at: string;
-}
-
-export interface TokenPair {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-  expires_in: number;
-  user: UserOut;
-}
-
-export interface RemoteSettings {
-  language: string;
-  default_style: Style;
-  ai_enabled: boolean;
-  enabled_categories: Category[];
-  disabled_rules: string[];
-  disabled_sites: string[];
-  disabled_apps: string[];
-}
-
-export interface UsageSummary {
-  days: number;
-  totals: {
-    checks: number;
-    characters: number;
-    suggestions_shown: number;
-    accepted: number;
-    ignored: number;
-    rewrites: number;
-  } | null;
-  acceptance_rate: number | null;
 }
 
 export interface ApiErrorBody {

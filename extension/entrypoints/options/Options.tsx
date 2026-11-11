@@ -46,13 +46,11 @@ export function Options() {
   const [settings, update] = useSettings();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const refreshStatus = () =>
-    send({ type: 'status' }).then(setStatus).catch(() => setStatus({ backend: 'offline', aiAvailable: false, user: null }));
+    send({ type: 'status' }).then(setStatus).catch(() => setStatus({ engine: 'builtin', aiAvailable: false }));
   useEffect(() => void refreshStatus(), []);
 
-  const sync = () => void send({ type: 'sync' }).catch(() => undefined);
   const save = async (patch: Parameters<typeof update>[0]) => {
     await update(patch);
-    sync();
   };
 
   return (
@@ -64,8 +62,6 @@ export function Options() {
           <p style={{ fontSize: 13 }}>Detect Instantly. Suggest Intelligently. Let Users Decide.</p>
         </div>
       </div>
-
-      <Account status={status} onChange={refreshStatus} />
 
       <Section title="Writing" description="Applies everywhere WriteMind checks your text.">
         <label className="stack" style={{ gap: 4 }}>
@@ -115,8 +111,8 @@ export function Options() {
           <div>
             <div>AI contextual suggestions</div>
             <div className="muted" style={{ fontSize: 12 }}>
-              Catches errors rule-based checking misses and powers rewrites. Personal data (e-mails, phone and card numbers,
-              links) is masked before any text reaches the AI model.
+              Used when a WriteMind server with AI is connected. Personal data (e-mails, phone and card numbers, links) is masked
+              before any text reaches the AI model.
             </div>
           </div>
           <label className="switch">
@@ -151,14 +147,21 @@ export function Options() {
         onRemove={(h) => void save({ disabledSites: settings.disabledSites.filter((x) => x !== h) })}
       />
 
-      <Section title="Connection" description="Address of the WriteMind API used for checks.">
-        <ApiUrl value={settings.apiBaseUrl} onSave={async (url) => { await update({ apiBaseUrl: url }); await refreshStatus(); }} />
-        <div className="row" style={{ fontSize: 13 }}>
-          <span className={`dot ${status ? (status.backend === 'ok' ? 'ok' : 'bad') : 'wait'}`} />
+      <Section
+        title="Checking engine"
+        description="WriteMind works right away with its built-in checker. Optionally connect a WriteMind server for the full grammar engine and AI suggestions."
+      >
+        <div className="row" style={{ fontSize: 13 }} data-testid="engine-status">
+          <span className={`dot ${status ? 'ok' : 'wait'}`} />
           <span className="muted">
-            {status?.backend === 'ok' ? `Connected${status.aiAvailable ? ' · AI available' : ' · AI not configured on the server'}` : 'Not connected'}
+            {status === null
+              ? 'Checking…'
+              : status.engine === 'server'
+                ? `Using the WriteMind server${status.aiAvailable ? ' with AI suggestions' : ''}.`
+                : 'Using the built-in checker — no server needed, and your text never leaves this browser.'}
           </span>
         </div>
+        <ApiUrl value={settings.apiBaseUrl} onSave={async (url) => { await update({ apiBaseUrl: url }); await refreshStatus(); }} />
       </Section>
 
       <Section title="Privacy">
@@ -166,7 +169,8 @@ export function Options() {
           <li>WriteMind never changes your text unless you click Accept or Replace.</li>
           <li>Password, payment, one-time-code and similar sensitive fields are never read.</li>
           <li>No keystroke logging: WriteMind reads a field’s text only after you pause typing.</li>
-          <li>The text you check is processed in memory and is not stored. Only anonymous counters are kept.</li>
+          <li>No account is needed. With the built-in checker your text never leaves this browser.</li>
+          <li>If you connect a WriteMind server, text is processed in memory and is not stored.</li>
           <li>
             Sites can opt out with <code>data-writemind="off"</code>; Grammarly’s <code>data-gramm="false"</code> is honoured too.
           </li>
@@ -251,113 +255,6 @@ function WordList(props: {
           </span>
         ))}
       </div>
-    </Section>
-  );
-}
-
-function Account({ status, onChange }: { status: StatusResponse | null; onChange: () => Promise<unknown> }) {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ kind: 'error' | 'success'; text: string } | null>(null);
-
-  const run = async (fn: () => Promise<unknown>, success?: string) => {
-    setBusy(true);
-    setMessage(null);
-    try {
-      await fn();
-      if (success) setMessage({ kind: 'success', text: success });
-      await onChange();
-    } catch (err) {
-      setMessage({ kind: 'error', text: err instanceof Error ? err.message : 'Something went wrong.' });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  if (status?.user) {
-    const exportData = () =>
-      run(async () => {
-        const data = await send({ type: 'account.export' });
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'writemind-export.json';
-        a.click();
-      });
-    const deleteAccount = () => {
-      const pw = prompt('Delete your WriteMind account and all synced data? Enter your password to confirm.');
-      if (pw) void run(() => send({ type: 'account.delete', password: pw }), 'Account deleted.');
-    };
-    return (
-      <Section title="Account" description="Your settings and dictionary sync across Chrome and the Windows app.">
-        <div className="row spread">
-          <div>
-            <b>{status.user.display_name ?? status.user.email}</b>
-            <div className="muted" style={{ fontSize: 13 }}>
-              {status.user.email} · {status.user.plan} plan
-            </div>
-          </div>
-          <button className="btn" disabled={busy} onClick={() => void run(() => send({ type: 'auth.logout' }))}>
-            Sign out
-          </button>
-        </div>
-        <div className="row">
-          <button className="btn" disabled={busy} onClick={() => void run(() => send({ type: 'sync' }), 'Synced.')}>
-            Sync now
-          </button>
-          <button className="btn" disabled={busy} onClick={() => void exportData()}>
-            Export my data
-          </button>
-          <button className="btn danger" disabled={busy} onClick={deleteAccount}>
-            Delete account
-          </button>
-        </div>
-        {message && <span className={message.kind}>{message.text}</span>}
-      </Section>
-    );
-  }
-
-  return (
-    <Section
-      title={mode === 'login' ? 'Sign in' : 'Create your account'}
-      description="Optional. Sign in to sync your dictionary and preferences across devices. Checking works without an account."
-    >
-      <form
-        className="stack"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void run(() =>
-            mode === 'login'
-              ? send({ type: 'auth.login', email, password })
-              : send({ type: 'auth.register', email, password, displayName: name || undefined }),
-          );
-        }}
-      >
-        {mode === 'register' && <input className="input" placeholder="Name (optional)" value={name} onChange={(e) => setName(e.target.value)} />}
-        <input className="input" type="email" autoComplete="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input
-          className="input"
-          type="password"
-          autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-          placeholder={mode === 'login' ? 'Password' : 'Password (8+ characters, mix letters and numbers)'}
-          required
-          minLength={mode === 'register' ? 8 : 1}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div className="row">
-          <button className="btn primary" type="submit" disabled={busy}>
-            {mode === 'login' ? 'Sign in' : 'Create account'}
-          </button>
-          <button type="button" className="btn" onClick={() => setMode(mode === 'login' ? 'register' : 'login')}>
-            {mode === 'login' ? 'Create an account' : 'I already have an account'}
-          </button>
-        </div>
-        {message && <span className={message.kind}>{message.text}</span>}
-      </form>
     </Section>
   );
 }

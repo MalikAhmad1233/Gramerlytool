@@ -1,0 +1,149 @@
+{
+  "description": "Held-out sentences for the built-in (offline) checker — not used while writing the rules. Shared by the extension (TypeScript) and Windows (C#) tests. `clean` is checked in neutral style, `chatClean` as a WhatsApp message; `errors` are [incorrect, corrected] pairs that one suggestion must turn into the corrected text.",
+  "clean": [
+    "Hi Sarah, thanks for the quick turnaround on the proposal. I've added my comments in the doc.",
+    "Can we move tomorrow's standup to 10:30? I have a dentist appointment at 9.",
+    "The Q3 report is attached. Revenue grew 12% year over year, driven mostly by the APAC region.",
+    "I'm excited to share that I've joined Acme Corp as a Senior Product Manager!",
+    "Let me know if you need anything else from my side before Friday.",
+    "We shipped the new onboarding flow last week, and early metrics look promising.",
+    "Please review the attached contract and sign it by end of day.",
+    "Thanks again for your help with the migration — it went smoothly.",
+    "Our team is hiring! If you know a great backend engineer, send them my way.",
+    "The meeting has been rescheduled to Thursday at 2 p.m. in the main conference room.",
+    "She has worked here for five years and knows the codebase better than anyone.",
+    "It's been a long week, but we finally closed the deal.",
+    "I don't think that's the right approach, but I'm open to discussing it.",
+    "They're planning to launch the beta in early December.",
+    "Your feedback on the draft was really helpful.",
+    "Its main advantage is that it works offline.",
+    "The company announced its quarterly results on Monday.",
+    "Who's joining the call later today?",
+    "If he goes, I'll go too.",
+    "Does she know about the change to the schedule?",
+    "Let them know we're running about ten minutes late.",
+    "I had already finished the report when he called.",
+    "Everyone who attended the workshop received a certificate.",
+    "There are many reasons to be optimistic about next year.",
+    "He doesn't like coffee, but he loves tea.",
+    "What time works best for you next week?",
+    "We need fewer meetings and more focused time.",
+    "This is a great opportunity for an engineer who loves hard problems.",
+    "Can you send me the link to the dashboard? I can't find it in my inbox.",
+    "Our office in Toronto will be closed on Monday for the holiday.",
+    "I would have called you, but my phone died.",
+    "Please make sure it works on both Chrome and Edge before we release it.",
+    "A one-time code was sent to your phone.",
+    "We met an honest man at a European conference.",
+    "The data are stored in an encrypted database.",
+    "I saw the movie yesterday and loved it.",
+    "That was more than I expected."
+  ],
+  "chatClean": [
+    "lol same here, see you at 8",
+    "omg that's amazing!! congrats 🎉",
+    "On my way, be there in 5 mins"
+  ],
+  "errors": [
+    [
+      "She dont have time today.",
+      "She doesn't have time today."
+    ],
+    [
+      "I could of told you that.",
+      "I could have told you that."
+    ],
+    [
+      "Their going to be late again.",
+      "They're going to be late again."
+    ],
+    [
+      "He have a meeting at noon.",
+      "He has a meeting at noon."
+    ],
+    [
+      "We was hoping to hear back soon.",
+      "We were hoping to hear back soon."
+    ],
+    [
+      "I recieved your invoice yesterday.",
+      "I received your invoice yesterday."
+    ],
+    [
+      "Its a really good idea.",
+      "It's a really good idea."
+    ],
+    [
+      "Please send me a update by Friday.",
+      "Please send me an update by Friday."
+    ],
+    [
+      "I have went to that office before.",
+      "I have gone to that office before."
+    ],
+    [
+      "She is more smarter than her brother.",
+      "She is smarter than her brother."
+    ],
+    [
+      "This is better then the old version.",
+      "This is better than the old version."
+    ],
+    [
+      "The the meeting starts at noon.",
+      "The meeting starts at noon."
+    ],
+    [
+      "Thanks for you support this week.",
+      "Thanks for your support this week."
+    ],
+    [
+      "i think we should wait.",
+      "I think we should wait."
+    ],
+    [
+      "I'm looking forward to meet you.",
+      "I'm looking forward to meeting you."
+    ],
+    [
+      "Its not working on my laptop.",
+      "It's not working on my laptop."
+    ],
+    [
+      "He did not came to work today.",
+      "He did not come to work today."
+    ],
+    [
+      "Lets discuss this tomorrow.",
+      "Let's discuss this tomorrow."
+    ],
+    [
+      "They was very happy with the result.",
+      "They were very happy with the result."
+    ],
+    [
+      "I definately want to join.",
+      "I definitely want to join."
+    ],
+    [
+      "We should of booked earlier.",
+      "We should have booked earlier."
+    ],
+    [
+      "Your welcome!",
+      "You're welcome!"
+    ],
+    [
+      "There is several options available.",
+      "There are several options available."
+    ],
+    [
+      "It seem like a good plan.",
+      "It seems like a good plan."
+    ],
+    [
+      "I wil call you tommorow.",
+      "I wil call you tomorrow."
+    ]
+  ]
+}

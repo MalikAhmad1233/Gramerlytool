@@ -1,0 +1,1706 @@
+{
+ "$comment": "WriteMind built-in checker rules, shared by the Chrome extension (TypeScript) and the Windows app (C#). Patterns must stay compatible with both JavaScript and .NET regex. Offsets are UTF-16. See docs/ARCHITECTURE.md (Built-in checker).",
+ "version": 1,
+ "chatApps": [
+  "whatsapp",
+  "messenger",
+  "telegram",
+  "slack",
+  "teams",
+  "discord"
+ ],
+ "protect": [
+  "```[\\s\\S]*?```",
+  "`[^`\\n]+`",
+  "\\b(?:https?://|ftp://|www\\.)[^\\s<>\\\"']+",
+  "\\b[\\w.+-]+@[\\w-]+(?:\\.[\\w-]+)+\\b",
+  "(?<![\\w@])@[\\w.]{2,}",
+  "(?<![\\w#&])#[A-Za-z][\\w-]*",
+  "\\b[A-Za-z]:\\\\[^\\s]+",
+  "(?<![\\w/])(?:/[\\w.-]+){2,}/?",
+  ":[a-z0-9_+-]{2,}:",
+  "\\b[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.(?:com|org|net|io|ai|dev|co|uk|edu|gov|app)\\b"
+ ],
+ "allowWords": [
+  "ok",
+  "okay",
+  "email",
+  "emails",
+  "emoji",
+  "emojis",
+  "app",
+  "apps",
+  "online",
+  "offline",
+  "login",
+  "logout",
+  "signup",
+  "website",
+  "websites",
+  "blog",
+  "blogs",
+  "inbox",
+  "smartphone",
+  "wifi",
+  "webinar",
+  "chatbot",
+  "startup",
+  "startups",
+  "username",
+  "usernames",
+  "dashboard",
+  "workflow",
+  "workflows",
+  "onboarding",
+  "fintech",
+  "ecommerce",
+  "hashtag",
+  "hashtags",
+  "selfie",
+  "vlog",
+  "podcast",
+  "podcasts",
+  "livestream",
+  "screenshot",
+  "screenshots",
+  "timeline",
+  "feedbacks",
+  "teammate",
+  "teammates",
+  "covid",
+  "lol",
+  "omg",
+  "haha",
+  "hahaha",
+  "hmm",
+  "btw",
+  "fyi",
+  "asap",
+  "etc",
+  "vs",
+  "gonna",
+  "wanna",
+  "gotta",
+  "kinda",
+  "sorta",
+  "dunno",
+  "yeah",
+  "yep",
+  "nope",
+  "thx",
+  "pls",
+  "plz",
+  "cuz",
+  "tho",
+  "ur",
+  "standup",
+  "standups",
+  "backend",
+  "backends",
+  "frontend",
+  "frontends",
+  "codebase",
+  "codebases",
+  "mins",
+  "hrs",
+  "secs",
+  "devops",
+  "webhook",
+  "webhooks",
+  "plugin",
+  "plugins",
+  "checkout",
+  "logins",
+  "roadmap",
+  "roadmaps",
+  "onboard",
+  "offboarding",
+  "upskill",
+  "upskilling",
+  "rebrand",
+  "rebranding",
+  "blockchain",
+  "crypto",
+  "cybersecurity",
+  "smartwatch",
+  "touchscreen",
+  "ecommerce",
+  "emailing",
+  "emailed",
+  "unsubscribe",
+  "analytics",
+  "saas",
+  "bluetooth",
+  "metadata",
+  "dataset",
+  "datasets",
+  "timestamp",
+  "timestamps",
+  "homepage",
+  "webpage",
+  "webpages",
+  "chatbots",
+  "devs",
+  "repo",
+  "repos",
+  "config",
+  "configs",
+  "async",
+  "sync",
+  "synced",
+  "syncing",
+  "todo",
+  "todos",
+  "kickoff",
+  "offsite",
+  "onsite",
+  "followup",
+  "writeup",
+  "rollout",
+  "rollouts",
+  "rollback",
+  "rollbacks",
+  "linkedin",
+  "whatsapp",
+  "gmail",
+  "youtube",
+  "tiktok",
+  "zoom",
+  "airbnb",
+  "uber",
+  "paypal",
+  "github",
+  "gitlab",
+  "jira",
+  "figma",
+  "notion",
+  "slack",
+  "dropbox",
+  "wordpress",
+  "shopify",
+  "google",
+  "microsoft",
+  "amazon",
+  "netflix",
+  "spotify",
+  "instagram",
+  "facebook",
+  "twitter",
+  "iphone",
+  "ipad",
+  "android",
+  "ios",
+  "macos",
+  "linux",
+  "javascript",
+  "typescript",
+  "python",
+  "kubernetes",
+  "docker",
+  "postgres",
+  "api",
+  "apis",
+  "ui",
+  "ux",
+  "url",
+  "urls",
+  "pdf",
+  "pdfs",
+  "csv",
+  "json",
+  "html",
+  "css",
+  "sql",
+  "faq",
+  "faqs",
+  "kpi",
+  "kpis",
+  "okr",
+  "okrs",
+  "roi",
+  "b2b",
+  "b2c",
+  "q1",
+  "q2",
+  "q3",
+  "q4",
+  "eod",
+  "eow",
+  "ooo",
+  "wfh",
+  "congrats",
+  "convo",
+  "convos",
+  "info",
+  "admin",
+  "admins",
+  "app's",
+  "biz",
+  "demo",
+  "demos",
+  "fintech",
+  "healthcare",
+  "workspace",
+  "workspaces",
+  "teammate",
+  "coworker",
+  "coworkers",
+  "whiteboard",
+  "brainstorm",
+  "brainstorming",
+  "deliverable",
+  "deliverables",
+  "stakeholder",
+  "stakeholders",
+  "walkthrough",
+  "walkthroughs",
+  "signoff",
+  "handoff",
+  "handoffs",
+  "pushback",
+  "upsell",
+  "upselling",
+  "rebook",
+  "reschedule",
+  "rescheduled",
+  "prepay",
+  "prepaid",
+  "subtask",
+  "subtasks",
+  "username",
+  "password",
+  "passwords",
+  "hotspot",
+  "wifi",
+  "online",
+  "covid",
+  "vaccinated",
+  "ai",
+  "chatgpt",
+  "llm",
+  "llms",
+  "genai",
+  "gpt",
+  "claude"
+ ],
+ "typos": {
+  "teh": "the",
+  "hte": "the",
+  "adn": "and",
+  "nad": "and",
+  "taht": "that",
+  "wiht": "with",
+  "whit": "with",
+  "thier": "their",
+  "recieve": "receive",
+  "recieved": "received",
+  "recieving": "receiving",
+  "beleive": "believe",
+  "belive": "believe",
+  "occured": "occurred",
+  "occurence": "occurrence",
+  "seperate": "separate",
+  "seperately": "separately",
+  "definately": "definitely",
+  "definatly": "definitely",
+  "untill": "until",
+  "wich": "which",
+  "freind": "friend",
+  "freinds": "friends",
+  "goverment": "government",
+  "enviroment": "environment",
+  "accomodate": "accommodate",
+  "acheive": "achieve",
+  "tommorow": "tomorrow",
+  "tommorrow": "tomorrow",
+  "tomorow": "tomorrow",
+  "begining": "beginning",
+  "wierd": "weird",
+  "calender": "calendar",
+  "existance": "existence",
+  "independant": "independent",
+  "publically": "publicly",
+  "recomend": "recommend",
+  "reccomend": "recommend",
+  "embarass": "embarrass",
+  "neccessary": "necessary",
+  "necesary": "necessary",
+  "truely": "truly",
+  "arguement": "argument",
+  "comming": "coming",
+  "writting": "writing",
+  "buisness": "business",
+  "busines": "business",
+  "adress": "address",
+  "alot": "a lot",
+  "becuase": "because",
+  "beacuse": "because",
+  "becasue": "because",
+  "jsut": "just",
+  "knwo": "know",
+  "konw": "know",
+  "waht": "what",
+  "whta": "what",
+  "yuo": "you",
+  "yoru": "your",
+  "youre": "you're",
+  "tehre": "there",
+  "thsi": "this",
+  "abotu": "about",
+  "aboot": "about",
+  "agian": "again",
+  "alos": "also",
+  "bcause": "because",
+  "cna": "can",
+  "coudl": "could",
+  "shoudl": "should",
+  "woudl": "would",
+  "dosen't": "doesn't",
+  "doens't": "doesn't",
+  "didnt": "didn't",
+  "finaly": "finally",
+  "foward": "forward",
+  "grammer": "grammar",
+  "happend": "happened",
+  "immediatly": "immediately",
+  "interupt": "interrupt",
+  "knowlege": "knowledge",
+  "libary": "library",
+  "maintainance": "maintenance",
+  "minuite": "minute",
+  "mispell": "misspell",
+  "noticable": "noticeable",
+  "oppurtunity": "opportunity",
+  "persue": "pursue",
+  "posession": "possession",
+  "prefered": "preferred",
+  "questionaire": "questionnaire",
+  "realy": "really",
+  "refered": "referred",
+  "relevent": "relevant",
+  "remeber": "remember",
+  "resturant": "restaurant",
+  "sucess": "success",
+  "succesful": "successful",
+  "successfull": "successful",
+  "supprise": "surprise",
+  "suprise": "surprise",
+  "tounge": "tongue",
+  "unfortunatly": "unfortunately",
+  "usualy": "usually",
+  "wether": "whether",
+  "wednsday": "Wednesday",
+  "wendsday": "Wednesday",
+  "febuary": "February",
+  "thursady": "Thursday",
+  "sincerly": "sincerely",
+  "regads": "regards",
+  "reguards": "regards",
+  "thanx": "thanks"
+ },
+ "maps": {
+  "apostrophe": {
+   "dont": "don't",
+   "doesnt": "doesn't",
+   "didnt": "didn't",
+   "cant": "can't",
+   "couldnt": "couldn't",
+   "shouldnt": "shouldn't",
+   "wouldnt": "wouldn't",
+   "isnt": "isn't",
+   "arent": "aren't",
+   "wasnt": "wasn't",
+   "werent": "weren't",
+   "havent": "haven't",
+   "hasnt": "hasn't",
+   "hadnt": "hadn't",
+   "mustnt": "mustn't",
+   "neednt": "needn't",
+   "im": "I'm",
+   "ive": "I've",
+   "youre": "you're",
+   "youve": "you've",
+   "youll": "you'll",
+   "theyre": "they're",
+   "theyve": "they've",
+   "weve": "we've",
+   "thats": "that's",
+   "whats": "what's",
+   "theres": "there's",
+   "heres": "here's",
+   "itll": "it'll",
+   "shes": "she's",
+   "didn": "didn't",
+   "doesn": "doesn't"
+  },
+  "participle": {
+   "went": "gone",
+   "came": "come",
+   "ate": "eaten",
+   "wrote": "written",
+   "saw": "seen",
+   "did": "done",
+   "took": "taken",
+   "gave": "given",
+   "broke": "broken",
+   "spoke": "spoken",
+   "began": "begun",
+   "drank": "drunk",
+   "ran": "run",
+   "swam": "swum",
+   "chose": "chosen",
+   "knew": "known",
+   "grew": "grown",
+   "threw": "thrown",
+   "drove": "driven",
+   "rode": "ridden",
+   "flew": "flown",
+   "wore": "worn",
+   "stole": "stolen",
+   "fell": "fallen",
+   "forgot": "forgotten",
+   "hid": "hidden",
+   "bit": "bitten",
+   "shook": "shaken",
+   "sang": "sung",
+   "rang": "rung",
+   "froze": "frozen",
+   "woke": "woken"
+  },
+  "base": {
+   "went": "go",
+   "came": "come",
+   "saw": "see",
+   "ate": "eat",
+   "wrote": "write",
+   "took": "take",
+   "gave": "give",
+   "knew": "know",
+   "made": "make",
+   "said": "say",
+   "told": "tell",
+   "got": "get",
+   "found": "find",
+   "thought": "think",
+   "brought": "bring",
+   "bought": "buy",
+   "felt": "feel",
+   "left": "leave",
+   "ran": "run",
+   "sent": "send",
+   "began": "begin",
+   "kept": "keep",
+   "heard": "hear",
+   "met": "meet",
+   "paid": "pay",
+   "sat": "sit",
+   "spoke": "speak",
+   "understood": "understand",
+   "wanted": "want",
+   "needed": "need",
+   "liked": "like",
+   "worked": "work",
+   "called": "call",
+   "asked": "ask",
+   "tried": "try",
+   "used": "use",
+   "looked": "look",
+   "played": "play",
+   "helped": "help",
+   "started": "start",
+   "finished": "finish",
+   "received": "receive",
+   "decided": "decide",
+   "agreed": "agree",
+   "arrived": "arrive",
+   "reached": "reach",
+   "changed": "change",
+   "moved": "move",
+   "loved": "love",
+   "hoped": "hope",
+   "planned": "plan",
+   "stopped": "stop",
+   "replied": "reply",
+   "answered": "answer",
+   "attended": "attend",
+   "forgot": "forget"
+  },
+  "third": {
+   "go": "goes",
+   "do": "does",
+   "have": "has",
+   "want": "wants",
+   "need": "needs",
+   "like": "likes",
+   "know": "knows",
+   "think": "thinks",
+   "make": "makes",
+   "take": "takes",
+   "come": "comes",
+   "say": "says",
+   "see": "sees",
+   "get": "gets",
+   "give": "gives",
+   "work": "works",
+   "live": "lives",
+   "play": "plays",
+   "look": "looks",
+   "feel": "feels",
+   "seem": "seems",
+   "try": "tries",
+   "use": "uses",
+   "run": "runs",
+   "call": "calls",
+   "ask": "asks",
+   "tell": "tells",
+   "love": "loves",
+   "hate": "hates",
+   "mean": "means",
+   "send": "sends",
+   "write": "writes",
+   "read": "reads",
+   "leave": "leaves",
+   "keep": "keeps",
+   "believe": "believes",
+   "understand": "understands",
+   "remember": "remembers",
+   "agree": "agrees",
+   "eat": "eats",
+   "sleep": "sleeps",
+   "watch": "watches",
+   "plan": "plans",
+   "wish": "wishes",
+   "hope": "hopes",
+   "start": "starts",
+   "help": "helps",
+   "talk": "talks",
+   "walk": "walks",
+   "drive": "drives",
+   "speak": "speaks",
+   "teach": "teaches",
+   "study": "studies",
+   "enjoy": "enjoys",
+   "prefer": "prefers",
+   "are": "is",
+   "were": "was"
+  },
+  "ing": {
+   "hear": "hearing",
+   "see": "seeing",
+   "meet": "meeting",
+   "receive": "receiving",
+   "get": "getting",
+   "talk": "talking",
+   "speak": "speaking",
+   "work": "working",
+   "discuss": "discussing",
+   "have": "having",
+   "join": "joining",
+   "catch": "catching",
+   "chat": "chatting",
+   "connect": "connecting",
+   "visit": "visiting",
+   "welcome": "welcoming",
+   "collaborate": "collaborating",
+   "start": "starting",
+   "see you": "seeing you"
+  },
+  "thisAre": {
+   "are": "is",
+   "were": "was"
+  },
+  "theseIs": {
+   "is": "are",
+   "was": "were"
+  },
+  "isAre": {
+   "is": "are",
+   "was": "were"
+  },
+  "seen": {
+   "seen": [
+    "saw",
+    "have seen"
+   ],
+   "done": [
+    "did",
+    "have done"
+   ],
+   "been": [
+    "was",
+    "have been"
+   ]
+  },
+  "formalContractions": {
+   "don't": "do not",
+   "doesn't": "does not",
+   "didn't": "did not",
+   "can't": "cannot",
+   "couldn't": "could not",
+   "won't": "will not",
+   "wouldn't": "would not",
+   "shouldn't": "should not",
+   "isn't": "is not",
+   "aren't": "are not",
+   "wasn't": "was not",
+   "weren't": "were not",
+   "haven't": "have not",
+   "hasn't": "has not",
+   "hadn't": "had not",
+   "mustn't": "must not",
+   "needn't": "need not",
+   "i'm": "I am",
+   "you're": "you are",
+   "we're": "we are",
+   "they're": "they are",
+   "that's": "that is",
+   "there's": "there is",
+   "what's": "what is",
+   "who's": "who is",
+   "let's": "let us",
+   "i've": "I have",
+   "you've": "you have",
+   "we've": "we have",
+   "they've": "they have",
+   "i'll": "I will",
+   "you'll": "you will",
+   "we'll": "we will",
+   "they'll": "they will",
+   "he'll": "he will",
+   "she'll": "she will",
+   "it'll": "it will",
+   "it's": [
+    "it is",
+    "it has"
+   ],
+   "he's": [
+    "he is",
+    "he has"
+   ],
+   "she's": [
+    "she is",
+    "she has"
+   ],
+   "i'd": [
+    "I would",
+    "I had"
+   ],
+   "you'd": [
+    "you would",
+    "you had"
+   ],
+   "we'd": [
+    "we would",
+    "we had"
+   ],
+   "they'd": [
+    "they would",
+    "they had"
+   ]
+  },
+  "informal": {
+   "gonna": "going to",
+   "wanna": "want to",
+   "gotta": [
+    "have to",
+    "got to"
+   ],
+   "kinda": [
+    "kind of",
+    "somewhat"
+   ],
+   "sorta": [
+    "sort of",
+    "somewhat"
+   ],
+   "dunno": [
+    "don't know",
+    "do not know"
+   ],
+   "gimme": "give me",
+   "lemme": "let me",
+   "ya": "you",
+   "yeah": "yes",
+   "yep": "yes",
+   "nope": "no",
+   "cuz": "because",
+   "coz": "because",
+   "tho": "though",
+   "thru": "through",
+   "pls": "please",
+   "plz": "please",
+   "thx": [
+    "thanks",
+    "thank you"
+   ],
+   "thanx": [
+    "thanks",
+    "thank you"
+   ],
+   "u": "you",
+   "ur": [
+    "your",
+    "you're"
+   ],
+   "b4": "before",
+   "btw": "by the way",
+   "imo": "in my opinion",
+   "y'all": "you all"
+  },
+  "informalFormal": {
+   "asap": "as soon as possible",
+   "fyi": "for your information",
+   "info": "information"
+  }
+ },
+ "rules": [
+  {
+   "id": "WM_COULD_OF",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Wrong verb form",
+   "message": "Use “have” (not “of”) after “{1}”.",
+   "pattern": "\\b(could|should|would|must|might)\\s+of\\b",
+   "flags": "i",
+   "replace": [
+    "{1} have"
+   ],
+   "confidence": 0.92,
+   "group": 0
+  },
+  {
+   "id": "WM_ALOT",
+   "category": "spelling",
+   "severity": "error",
+   "title": "Spelling mistake",
+   "message": "“A lot” is written as two words.",
+   "pattern": "\\b(alot)\\b",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "a lot"
+   ],
+   "confidence": 0.95
+  },
+  {
+   "id": "WM_MISSING_APOSTROPHE",
+   "category": "spelling",
+   "severity": "error",
+   "title": "Missing apostrophe",
+   "message": "This contraction needs an apostrophe: “{=}”.",
+   "pattern": "(?<![\\w'’])(shouldnt|couldnt|wouldnt|doesnt|werent|havent|mustnt|neednt|theyre|theyve|theres|didnt|arent|wasnt|hasnt|hadnt|youre|youve|youll|thats|whats|heres|doesn|dont|cant|isnt|weve|itll|shes|didn|ive|im)(?![\\w'’])",
+   "flags": "i",
+   "group": 1,
+   "map": "apostrophe",
+   "skipAllCaps": true,
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_LETS",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Missing apostrophe",
+   "message": "“Let's” (let us) needs an apostrophe here.",
+   "pattern": "\\b(Lets)\\s+(?=(?:go|meet|do|make|start|try|see|talk|get|have|take|discuss|plan|catch|chat|grab|keep|move|work|be|finish|hope)\\b)",
+   "group": 1,
+   "replace": [
+    "Let's"
+   ],
+   "confidence": 0.9,
+   "flags": ""
+  },
+  {
+   "id": "WM_ITS_IT_IS",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “it's” (it is) here — “its” is possessive.",
+   "pattern": "\\b(its)\\s+(?=(?:a|an|the|not|been|going|getting|ok|okay|about|just|nice|great|good|fine|true|important|possible|hard|easy|late|early|my|your|our|done|gonna|raining|cold|hot|fun|here|there|me)\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "it's"
+   ],
+   "confidence": 0.88
+  },
+  {
+   "id": "WM_ITS_POSSESSIVE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use the possessive “its” (no apostrophe) here.",
+   "pattern": "\\b(?:of|on|in|with|from|for|by|at|into|finished|lost|did|has|reached|changed|made|took|completed|improved|updated|kept|shared|reduced|increased|lose|change|improve|update|keep|share|reduce|increase|finish|complete)\\s+(it['’]s)\\s+(?!(?:a|an|the|not|been|going|getting|only|just|also|very|really|so|too|time|about|all|still|always|never)\\b)(?=[a-z]+\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "its"
+   ],
+   "confidence": 0.85
+  },
+  {
+   "id": "WM_YOUR_WELCOME",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “you're” (you are) here: “you're welcome”.",
+   "pattern": "\\b(your)(?=\\s+welcome\\b\\s*(?:[.!,]|to\\b|$))",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "you're"
+   ],
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_YOURE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “you're” (you are) here.",
+   "pattern": "\\b(your)(?=\\s+(?:the\\s+best|going\\s+to|not\\s+going|being\\s+(?:silly|serious|ridiculous|so|too|very)))",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "you're"
+   ],
+   "confidence": 0.88
+  },
+  {
+   "id": "WM_THEIR_GOING",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “they're” (they are) before “going to”.",
+   "pattern": "\\b(their)(?=\\s+going\\s+to\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "they're"
+   ],
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_THEIR_ING",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “they're” (they are) when it means “they are …”.",
+   "pattern": "(?:^|(?<=[.!?]\\s)|(?<=\\n))(their)(?=\\s+(?:coming|doing|trying|getting|making|taking|leaving)\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "they're"
+   ],
+   "confidence": 0.88
+  },
+  {
+   "id": "WM_THEN_THAN",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “than” for comparisons.",
+   "pattern": "\\b(more|less|rather|other|better|worse|bigger|taller|smaller|larger|faster|slower|higher|lower|easier|harder|older|younger|longer|shorter|stronger|weaker|cheaper|richer|nicer|closer|safer|simpler|smarter|quicker|louder|happier|busier|greater|wider|deeper|heavier|lighter|earlier|further|farther|fewer)\\s+then\\b",
+   "flags": "i",
+   "replace": [
+    "{1} than"
+   ],
+   "confidence": 0.9,
+   "group": 0
+  },
+  {
+   "id": "WM_DOUBLE_COMPARATIVE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Double comparative",
+   "message": "“{2}” is already comparative — drop “{1}”.",
+   "pattern": "\\b(more|most)\\s+(better|worse|bigger|taller|smaller|larger|faster|slower|higher|lower|easier|harder|happier|older|younger|longer|shorter|stronger|weaker|cheaper|richer|nicer|cooler|warmer|colder|closer|safer|simpler|smarter|quicker|louder|prettier|busier|earlier|greater|wider|deeper|heavier|lighter|best|worst|biggest|tallest|smallest|largest|fastest|slowest|highest|lowest|easiest|hardest|happiest|oldest|youngest|longest|shortest|strongest|cheapest|nicest|closest|safest|simplest|smartest|greatest)\\b",
+   "flags": "i",
+   "replace": [
+    "{2}"
+   ],
+   "confidence": 0.9,
+   "group": 0
+  },
+  {
+   "id": "WM_PERFECT_PARTICIPLE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Wrong verb form",
+   "message": "Use the past participle “{=}” after “have/has/had”.",
+   "pattern": "(?:\\b(?:have|has|had|having)|['’]ve)\\s+(?:(?:already|just|never|ever|not|always|also|recently|finally)\\s+)?(forgot|wrote|broke|spoke|began|drank|chose|threw|drove|stole|shook|froze|went|came|took|gave|swam|knew|grew|rode|flew|wore|fell|sang|rang|woke|ate|saw|did|ran|hid|bit)\\b",
+   "flags": "i",
+   "group": 1,
+   "map": "participle",
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_NEGATION_BASE_FORM",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Wrong verb form",
+   "message": "After “did not / does not / do not”, use the base form “{=}”.",
+   "pattern": "\\b(?:did\\s+not|didn['’]t|didnt|does\\s+not|doesn['’]t|doesnt|do\\s+not|don['’]t|dont)\\s+(understood|finished|received|answered|attended|thought|brought|started|decided|arrived|reached|changed|planned|stopped|replied|bought|wanted|needed|worked|called|looked|played|helped|agreed|forgot|wrote|found|began|heard|spoke|liked|asked|tried|moved|loved|hoped|went|came|took|gave|knew|made|said|told|felt|left|sent|kept|paid|used|saw|ate|got|ran|met|sat)\\b",
+   "flags": "i",
+   "group": 1,
+   "map": "base",
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_THIRD_PERSON",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "With “{1}”, use “{=}”.",
+   "pattern": "\\b(he|she|it|everyone|everybody|nobody|someone|somebody|everything|nothing)\\s+(understand|remember|believe|prefer|think|write|leave|agree|sleep|watch|start|drive|speak|teach|study|enjoy|have|want|need|like|know|make|take|come|give|work|live|play|look|feel|seem|call|tell|love|hate|mean|send|read|keep|plan|wish|hope|help|talk|walk|were|say|see|get|try|use|run|ask|eat|are|go|do)\\b",
+   "flags": "i",
+   "group": 2,
+   "map": "third",
+   "unlessPrecededBy": "\\b(?:do|does|did|don['’]t|doesn['’]t|didn['’]t|dont|doesnt|didnt|will|would|can|could|should|shall|may|might|must|won['’]t|wouldn['’]t|can['’]t|cannot|couldn['’]t|shouldn['’]t|let|lets|let['’]s|make|makes|made|making|help|helps|helped|have|has|had|see|sees|saw|watch|watched|hear|heard|to|and|or)\\s+$",
+   "confidence": 0.85
+  },
+  {
+   "id": "WM_THIRD_PERSON_DONT",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "With “{1}”, use “doesn't”.",
+   "pattern": "\\b(he|she|it)\\s+(do)(?=n['’]t\\b)",
+   "flags": "i",
+   "group": 2,
+   "replace": [
+    "does"
+   ],
+   "unlessPrecededBy": "\\b(?:do|does|did|don['’]t|doesn['’]t|didn['’]t|dont|doesnt|didnt|will|would|can|could|should|shall|may|might|must|won['’]t|wouldn['’]t|can['’]t|cannot|couldn['’]t|shouldn['’]t|let|lets|let['’]s|make|makes|made|making|help|helps|helped|have|has|had|see|sees|saw|watch|watched|hear|heard|to|and|or)\\s+$",
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_THIRD_PERSON_DONT_NOAPOS",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "With “{1}”, use “doesn't”.",
+   "pattern": "\\b(he|she|it)\\s+(dont)\\b",
+   "flags": "i",
+   "group": 2,
+   "replace": [
+    "doesn't",
+    "don't"
+   ],
+   "unlessPrecededBy": "\\b(?:do|does|did|don['’]t|doesn['’]t|didn['’]t|dont|doesnt|didnt|will|would|can|could|should|shall|may|might|must|won['’]t|wouldn['’]t|can['’]t|cannot|couldn['’]t|shouldn['’]t|let|lets|let['’]s|make|makes|made|making|help|helps|helped|have|has|had|see|sees|saw|watch|watched|hear|heard|to|and|or)\\s+$",
+   "confidence": 0.93
+  },
+  {
+   "id": "WM_WE_WAS",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "With “{1}”, use “were”.",
+   "pattern": "\\b(we|you|they)\\s+(was)\\b",
+   "flags": "i",
+   "group": 2,
+   "replace": [
+    "were"
+   ],
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_THEY_IS",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "With “{1}”, use “are”.",
+   "pattern": "\\b(we|you|they)\\s+(is)\\b",
+   "flags": "i",
+   "group": 2,
+   "replace": [
+    "are"
+   ],
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_I_IS",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "With “I”, use “am”.",
+   "pattern": "\\b(I)\\s+(is|are)\\b",
+   "group": 2,
+   "replace": [
+    "am"
+   ],
+   "confidence": 0.9,
+   "flags": ""
+  },
+  {
+   "id": "WM_THIS_ARE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "“This” is singular — use “{=}” (or “These are”).",
+   "pattern": "\\b(this)\\s+(are|were)\\b",
+   "flags": "i",
+   "group": 2,
+   "map": "thisAre",
+   "confidence": 0.85
+  },
+  {
+   "id": "WM_THESE_IS",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "“{1}” is plural — use “{=}”.",
+   "pattern": "\\b(these|those)\\s+(is|was)\\b",
+   "flags": "i",
+   "group": 2,
+   "map": "theseIs",
+   "confidence": 0.85
+  },
+  {
+   "id": "WM_THERE_IS_PLURAL",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Subject-verb agreement",
+   "message": "The subject is plural, so use “{=}”.",
+   "pattern": "\\b(?:there|here)\\s+(is|was)\\s+(?=(?:many|several|few|numerous|multiple|various|lots\\s+of|two|three|four|five|six|seven|eight|nine|ten)\\b)",
+   "flags": "i",
+   "group": 1,
+   "map": "isAre",
+   "confidence": 0.88
+  },
+  {
+   "id": "WM_SEEN_AS_PAST",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Wrong verb form",
+   "message": "“{2}” needs “have”, or use the simple past “{=}”.",
+   "pattern": "\\b(I|you|we|they|he|she)\\s+(seen|done)\\b",
+   "group": 2,
+   "map": "seen",
+   "unlessPrecededBy": "\\b(?:have|has|had|having|be|been|being|is|are|was|were|am)\\s+$",
+   "confidence": 0.85,
+   "flags": ""
+  },
+  {
+   "id": "WM_AM_AGREE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Wrong verb form",
+   "message": "“Agree” is a verb — no “{1}” needed.",
+   "pattern": "\\b(am|is|are)\\s+(agree|disagree)\\b",
+   "flags": "i",
+   "replace": [
+    "{2}"
+   ],
+   "confidence": 0.9,
+   "group": 0
+  },
+  {
+   "id": "WM_LOOK_FORWARD_TO",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Wrong verb form",
+   "message": "After “look forward to”, use the -ing form: “{=}”.",
+   "pattern": "\\b(?:look|looking|looks|looked)\\s+forward\\s+(to\\s+(collaborate|receive|discuss|connect|welcome|see you|speak|catch|visit|start|hear|meet|talk|work|have|join|chat|see|get))\\b",
+   "flags": "i",
+   "group": 1,
+   "mapGroup": 2,
+   "map": "ing",
+   "template": "to {=}",
+   "confidence": 0.9
+  },
+  {
+   "id": "WM_LESS_FEWER",
+   "category": "grammar",
+   "severity": "warning",
+   "title": "Fewer vs. less",
+   "message": "Use “fewer” with things you can count.",
+   "pattern": "\\b(less)\\s+(?=(?:people|friends|items|things|cars|books|users|customers|employees|students|days|hours|minutes|weeks|months|years|words|mistakes|errors|options|choices|problems|issues|questions|calories|members|tasks|emails|messages|calls|meetings|files|pages|steps|times|ideas|jobs|reasons|features|products|tickets|orders|clients|children|kids|men|women)\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "fewer"
+   ],
+   "confidence": 0.85
+  },
+  {
+   "id": "WM_ME_AND",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Pronoun case",
+   "message": "Use “I” as the subject of the sentence.",
+   "pattern": "(?:^|(?<=[.!?]\\s)|(?<=\\n))(Me)\\s+and\\s+[A-Za-z]+\\s+(?=(?:went|go|are|were|will|have|had|did|do|can|could|should|would|want|wanted|need|needed|like|liked|love|loved|met|saw|played|left|came|got|made|took|is|was)\\b)",
+   "group": 1,
+   "replace": [
+    "I"
+   ],
+   "confidence": 0.85,
+   "flags": ""
+  },
+  {
+   "id": "WM_TOO_TO",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “to” before a noun (“too” means “also” or “excessively”).",
+   "pattern": "\\b(too)\\s+(?=(?:the|a|an|my|your|his|her|our|their|this|that|these|those|school|work|bed|church|class|town|lunch|dinner|breakfast)\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "to"
+   ],
+   "confidence": 0.88
+  },
+  {
+   "id": "WM_TO_TOO",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “too” to mean “excessively”.",
+   "pattern": "\\b(to)\\s+(?=(?:late|early|soon)\\s*(?:[.!?,]|$))",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "too"
+   ],
+   "unlessPrecededBy": "\\b(?:from|up|due|next|close|back)\\s+$",
+   "confidence": 0.8
+  },
+  {
+   "id": "WM_TO_MUCH",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use “too much” to mean “excessively”.",
+   "pattern": "\\b(?:is|was|be|are|way|far|it['’]s)\\s+(to)\\s+(?=much\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "too"
+   ],
+   "confidence": 0.85
+  },
+  {
+   "id": "WM_WHOSE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Commonly confused words",
+   "message": "Use the possessive “whose”.",
+   "pattern": "(?:^|(?<=[.!?]\\s)|(?<=\\n))(Who['’]s)\\s+(?=[a-z]+\\s+(?:is|are|was|were)\\b)",
+   "group": 1,
+   "replace": [
+    "Whose"
+   ],
+   "confidence": 0.85,
+   "flags": ""
+  },
+  {
+   "id": "WM_POSSESSIVE_YOUR",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Possessive pronoun",
+   "message": "Use the possessive “your” here.",
+   "pattern": "\\b(?:me|us|him|her|them|for|of|about|with|from|in|know|appreciate|received|read)\\s+(you)\\s+(?=(?:feedback|help|support|reply|response|message|email|e-mail|thoughts|input|comments|answer|opinion|time|patience|order|account|request|question|application|availability|team|work|report|cooperation|understanding|assistance|consideration|attention|kindness|advice|suggestions|proposal|invoice|payment|details|address|number|name)\\b)",
+   "flags": "i",
+   "group": 1,
+   "replace": [
+    "your"
+   ],
+   "confidence": 0.88
+  },
+  {
+   "id": "WM_REPEATED_WORD",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Repeated word",
+   "message": "The word “{1}” is repeated.",
+   "pattern": "\\b([A-Za-z]+)\\s+(\\1)\\b",
+   "flags": "i",
+   "replace": [
+    "{1}"
+   ],
+   "exceptGroup": 1,
+   "exceptions": [
+    "that",
+    "had",
+    "is",
+    "ha",
+    "bye",
+    "no",
+    "yeah",
+    "very",
+    "so",
+    "hmm",
+    "la",
+    "na",
+    "blah",
+    "go"
+   ],
+   "confidence": 0.92,
+   "group": 0
+  },
+  {
+   "id": "WM_I_LOWERCASE",
+   "category": "grammar",
+   "severity": "error",
+   "title": "Capitalization",
+   "message": "The pronoun “I” is always capitalized.",
+   "pattern": "(?<![\\w'’.\\-(])(i)(?=(?:['’](?:m|ve|ll|d))?(?![\\w'’.\\-)]))",
+   "group": 1,
+   "replace": [
+    "I"
+   ],
+   "confidence": 0.92,
+   "flags": ""
+  },
+  {
+   "id": "WM_SENTENCE_START",
+   "category": "grammar",
+   "severity": "warning",
+   "title": "Capitalization",
+   "message": "Start the sentence with a capital letter.",
+   "pattern": "(?:^|(?<=[.!?]\\s)|(?<=\\n\\n))([a-z][a-z'’]*)",
+   "group": 1,
+   "template": "{^1}",
+   "unlessPrecededBy": "(?:\\b(?:e\\.g|i\\.e|etc|vs|approx|incl|esp|cf|al|mr|mrs|ms|dr|st|no|pp|ca|resp|a\\.m|p\\.m)\\.\\s+$|\\.\\.\\.\\s+$|…\\s+$|\\b\\d+\\.\\s+$)",
+   "exceptions": [
+    "iphone",
+    "ipad",
+    "ios",
+    "macos",
+    "ebay",
+    "e",
+    "lol",
+    "omg",
+    "btw",
+    "idk",
+    "imo",
+    "tbh",
+    "brb",
+    "ok",
+    "okay",
+    "fyi",
+    "ty",
+    "np",
+    "thx",
+    "gm",
+    "gn"
+   ],
+   "exceptGroup": 1,
+   "skipInCasual": true,
+   "confidence": 0.8,
+   "flags": ""
+  },
+  {
+   "id": "WM_SPACE_BEFORE_PUNCTUATION",
+   "category": "punctuation",
+   "severity": "warning",
+   "title": "Spacing",
+   "message": "Remove the space before “{1}”.",
+   "pattern": "[ \\t]+([,;:.!?])(?=\\s|$)",
+   "replace": [
+    "{1}"
+   ],
+   "confidence": 0.9,
+   "group": 0,
+   "flags": ""
+  },
+  {
+   "id": "WM_MISSING_SPACE",
+   "category": "punctuation",
+   "severity": "warning",
+   "title": "Spacing",
+   "message": "Add a space after “{1}”.",
+   "pattern": "(?<=[a-z]{2})([,;])(?=[A-Za-z]{2})",
+   "group": 1,
+   "replace": [
+    "{1} "
+   ],
+   "confidence": 0.85,
+   "flags": ""
+  },
+  {
+   "id": "WM_MISSING_SPACE_PERIOD",
+   "category": "punctuation",
+   "severity": "warning",
+   "title": "Spacing",
+   "message": "Add a space after the period.",
+   "pattern": "(?<=[a-z]{2})(\\.)(?=[A-Z][a-z])",
+   "group": 1,
+   "replace": [
+    ". "
+   ],
+   "confidence": 0.8,
+   "flags": ""
+  },
+  {
+   "id": "WM_DOUBLE_SPACE",
+   "category": "punctuation",
+   "severity": "suggestion",
+   "title": "Extra space",
+   "message": "Use a single space between words.",
+   "pattern": "(?<=\\S)( {2,})(?=\\S)",
+   "group": 1,
+   "replace": [
+    " "
+   ],
+   "skipInCasual": true,
+   "confidence": 0.8,
+   "flags": ""
+  },
+  {
+   "id": "WM_MULTIPLE_PUNCTUATION",
+   "category": "punctuation",
+   "severity": "suggestion",
+   "title": "Repeated punctuation",
+   "message": "Repeated punctuation marks can read as unprofessional. Use a single mark.",
+   "pattern": "([!?])\\1+",
+   "replace": [
+    "{1}"
+   ],
+   "styles": [
+    "professional",
+    "formal"
+   ],
+   "confidence": 0.85,
+   "group": 0,
+   "flags": ""
+  },
+  {
+   "id": "WM_FORMAL_CONTRACTION",
+   "category": "style",
+   "severity": "warning",
+   "title": "Contraction in formal writing",
+   "message": "Formal writing usually avoids contractions. Consider “{=}”.",
+   "pattern": "(?<![\\w'’])(shouldn['’]t|couldn['’]t|wouldn['’]t|doesn['’]t|weren['’]t|haven['’]t|mustn['’]t|needn['’]t|they['’]re|there['’]s|they['’]ve|they['’]ll|didn['’]t|aren['’]t|wasn['’]t|hasn['’]t|hadn['’]t|you['’]re|that['’]s|what['’]s|you['’]ve|you['’]ll|she['’]ll|they['’]d|don['’]t|can['’]t|won['’]t|isn['’]t|we['’]re|who['’]s|let['’]s|we['’]ve|we['’]ll|he['’]ll|it['’]ll|she['’]s|you['’]d|i['’]ve|i['’]ll|it['’]s|he['’]s|we['’]d|i['’]m|i['’]d)(?![\\w'’])",
+   "flags": "i",
+   "group": 1,
+   "map": "formalContractions",
+   "reverseIfFollowedBy": "^\\s+(?:been|got|gotten|had|become)\\b",
+   "styles": [
+    "formal"
+   ],
+   "confidence": 0.75
+  },
+  {
+   "id": "WM_INFORMAL_WORD",
+   "category": "style",
+   "severity": "suggestion",
+   "title": "Informal language",
+   "message": "“{0}” is informal. Consider “{=}” for a more polished tone.",
+   "pattern": "(?<![\\w'’@#])(gonna|wanna|gotta|kinda|sorta|dunno|gimme|lemme|thanx|y['’]all|yeah|nope|thru|yep|cuz|coz|tho|pls|plz|thx|btw|imo|ya|ur|b4|u)(?![\\w'’])",
+   "flags": "i",
+   "group": 1,
+   "map": "informal",
+   "skipAllCaps": true,
+   "styles": [
+    "professional",
+    "formal"
+   ],
+   "confidence": 0.8
+  },
+  {
+   "id": "WM_INFORMAL_WORD_FORMAL",
+   "category": "style",
+   "severity": "warning",
+   "title": "Informal language",
+   "message": "“{0}” is informal. Consider “{=}”.",
+   "pattern": "(?<![\\w'’@#])(asap|info|fyi)(?![\\w'’])",
+   "flags": "i",
+   "group": 1,
+   "map": "informalFormal",
+   "styles": [
+    "formal"
+   ],
+   "confidence": 0.8
+  }
+ ],
+ "rewrite": {
+  "formalPhrases": [
+   [
+    "\\bhey\\b",
+    "Hello"
+   ],
+   [
+    "\\bhi\\b(?=\\s+\\w)",
+    "Hello"
+   ],
+   [
+    "\\bthanks a lot\\b",
+    "thank you very much"
+   ],
+   [
+    "\\bthanks\\b",
+    "thank you"
+   ],
+   [
+    "\\bkids\\b",
+    "children"
+   ],
+   [
+    "\\bget back to you\\b",
+    "respond to you"
+   ],
+   [
+    "\\bcheck out\\b",
+    "review"
+   ],
+   [
+    "\\bfigure out\\b",
+    "determine"
+   ],
+   [
+    "\\bfind out\\b",
+    "discover"
+   ],
+   [
+    "\\bstuff\\b",
+    "items"
+   ],
+   [
+    "\\ba bit\\b",
+    "slightly"
+   ]
+  ],
+  "casualPhrases": [
+   [
+    "\\bhello\\b",
+    "Hi"
+   ],
+   [
+    "\\bthank you very much\\b",
+    "thanks a lot"
+   ],
+   [
+    "\\bthank you\\b",
+    "thanks"
+   ],
+   [
+    "\\bI apologi[sz]e\\b",
+    "sorry"
+   ],
+   [
+    "\\bregarding\\b",
+    "about"
+   ],
+   [
+    "\\bassist\\b",
+    "help"
+   ],
+   [
+    "\\bpurchase\\b",
+    "buy"
+   ],
+   [
+    "\\brequire\\b",
+    "need"
+   ]
+  ],
+  "concisePhrases": [
+   [
+    "\\bin order to\\b",
+    "to"
+   ],
+   [
+    "\\bdue to the fact that\\b",
+    "because"
+   ],
+   [
+    "\\bowing to the fact that\\b",
+    "because"
+   ],
+   [
+    "\\bin spite of the fact that\\b",
+    "although"
+   ],
+   [
+    "\\bat this point in time\\b",
+    "now"
+   ],
+   [
+    "\\bat the present time\\b",
+    "now"
+   ],
+   [
+    "\\bin the event that\\b",
+    "if"
+   ],
+   [
+    "\\bfor the purpose of\\b",
+    "for"
+   ],
+   [
+    "\\bin the near future\\b",
+    "soon"
+   ],
+   [
+    "\\ba large number of\\b",
+    "many"
+   ],
+   [
+    "\\ba majority of\\b",
+    "most"
+   ],
+   [
+    "\\bis able to\\b",
+    "can"
+   ],
+   [
+    "\\bare able to\\b",
+    "can"
+   ],
+   [
+    "\\bmake a decision\\b",
+    "decide"
+   ],
+   [
+    "\\bcome to a conclusion\\b",
+    "conclude"
+   ],
+   [
+    "\\bthe reason why is that\\b",
+    "because"
+   ],
+   [
+    "\\bwith regard to\\b",
+    "about"
+   ],
+   [
+    "\\bin regard to\\b",
+    "about"
+   ],
+   [
+    "\\bin terms of\\b",
+    "in"
+   ],
+   [
+    "\\bit is important to note that\\s*",
+    ""
+   ],
+   [
+    "\\bplease note that\\s*",
+    ""
+   ],
+   [
+    "\\bI just wanted to\\b",
+    "I want to"
+   ],
+   [
+    "\\bI wanted to\\b",
+    "I want to"
+   ]
+  ],
+  "contract": [
+   [
+    "do not",
+    "don't"
+   ],
+   [
+    "does not",
+    "doesn't"
+   ],
+   [
+    "did not",
+    "didn't"
+   ],
+   [
+    "cannot",
+    "can't"
+   ],
+   [
+    "can not",
+    "can't"
+   ],
+   [
+    "could not",
+    "couldn't"
+   ],
+   [
+    "will not",
+    "won't"
+   ],
+   [
+    "would not",
+    "wouldn't"
+   ],
+   [
+    "should not",
+    "shouldn't"
+   ],
+   [
+    "is not",
+    "isn't"
+   ],
+   [
+    "are not",
+    "aren't"
+   ],
+   [
+    "was not",
+    "wasn't"
+   ],
+   [
+    "were not",
+    "weren't"
+   ],
+   [
+    "have not",
+    "haven't"
+   ],
+   [
+    "has not",
+    "hasn't"
+   ],
+   [
+    "I am",
+    "I'm"
+   ],
+   [
+    "you are",
+    "you're"
+   ],
+   [
+    "we are",
+    "we're"
+   ],
+   [
+    "they are",
+    "they're"
+   ],
+   [
+    "it is",
+    "it's"
+   ],
+   [
+    "that is",
+    "that's"
+   ],
+   [
+    "there is",
+    "there's"
+   ],
+   [
+    "I have",
+    "I've"
+   ],
+   [
+    "we have",
+    "we've"
+   ],
+   [
+    "I will",
+    "I'll"
+   ],
+   [
+    "we will",
+    "we'll"
+   ],
+   [
+    "you will",
+    "you'll"
+   ]
+  ],
+  "fillersProfessional": "\\s*\\b(?:basically|literally|actually|totally)\\b(?=\\s)",
+  "fillersConcise": "\\s*\\b(?:basically|literally|actually|totally|really|just|very|quite)\\b(?=\\s)",
+  "questionStart": "^\\s*(?:(?:hello|hi|hey),?\\s+)?(?:can|could|would|will|do|does|did|is|are|was|were|should|shall|may|might|have|has|what|when|where|why|how|who|which)\\b"
+ }
+}

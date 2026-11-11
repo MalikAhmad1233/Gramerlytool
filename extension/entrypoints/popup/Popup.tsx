@@ -3,7 +3,7 @@ import { browser } from 'wxt/browser';
 import { send } from '../../src/shared/client';
 import type { StatusResponse } from '../../src/shared/messages';
 import { isSiteDisabled, statsItem, today, type LocalStats } from '../../src/shared/settings';
-import type { Style, UsageSummary } from '../../src/shared/types';
+import type { Style } from '../../src/shared/types';
 import { STYLES } from '../../src/shared/types';
 import { useSettings } from '../../src/ui/useSettings';
 
@@ -19,11 +19,9 @@ export function Popup() {
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [host, setHost] = useState<string | null>(null);
   const [stats, setStats] = useState<LocalStats | null>(null);
-  const [usage, setUsage] = useState<UsageSummary | null>(null);
 
   useEffect(() => {
-    void send({ type: 'status' }).then(setStatus).catch(() => setStatus({ backend: 'offline', aiAvailable: false, user: null }));
-    void send({ type: 'usage' }).then(setUsage).catch(() => undefined);
+    void send({ type: 'status' }).then(setStatus).catch(() => setStatus({ engine: 'builtin', aiAvailable: false }));
     void statsItem.getValue().then((s) => setStats(s && s.day === today() ? s : null));
     void browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
       try {
@@ -39,10 +37,9 @@ export function Popup() {
   const toggleSite = () => {
     if (!host) return;
     const next = siteOn ? [...settings.disabledSites, host] : settings.disabledSites.filter((h) => h !== host);
-    void update({ disabledSites: next }).then(() => send({ type: 'sync' }).catch(() => undefined));
+    void update({ disabledSites: next });
   };
 
-  const totals = usage?.totals;
   return (
     <div className="stack" style={{ width: 340, padding: 16 }}>
       <div className="brand">
@@ -72,14 +69,14 @@ export function Popup() {
             </label>
           </div>
         )}
-        <div className="row" style={{ fontSize: 12 }}>
-          <span className={`dot ${status ? (status.backend === 'ok' ? 'ok' : 'bad') : 'wait'}`} />
+        <div className="row" style={{ fontSize: 12 }} data-testid="engine-status">
+          <span className={`dot ${status ? 'ok' : 'wait'}`} />
           <span className="muted">
             {status === null
-              ? 'Connecting…'
-              : status.backend === 'ok'
-                ? `Connected${status.aiAvailable ? ' · AI suggestions on' : ' · grammar engine only'}`
-                : 'Cannot reach the WriteMind service'}
+              ? 'Starting…'
+              : status.engine === 'server'
+                ? `Ready · WriteMind server${status.aiAvailable ? ' with AI suggestions' : ''}`
+                : 'Ready · built-in checker (works offline)'}
           </span>
         </div>
       </div>
@@ -96,18 +93,18 @@ export function Popup() {
       </div>
 
       <div className="card stack">
-        <b>{totals ? 'Last 7 days' : 'Today'}</b>
+        <b>Today</b>
         <div className="stats">
           <div className="stat">
-            <b>{totals?.checks ?? stats?.checks ?? 0}</b>
+            <b>{stats?.checks ?? 0}</b>
             <span>checks</span>
           </div>
           <div className="stat">
-            <b>{totals?.accepted ?? stats?.accepted ?? 0}</b>
+            <b>{stats?.accepted ?? 0}</b>
             <span>accepted</span>
           </div>
           <div className="stat">
-            <b>{totals?.ignored ?? stats?.ignored ?? 0}</b>
+            <b>{stats?.ignored ?? 0}</b>
             <span>ignored</span>
           </div>
         </div>
@@ -115,10 +112,10 @@ export function Popup() {
 
       <div className="row spread">
         <span className="muted" style={{ fontSize: 12 }}>
-          {status?.user ? `Signed in as ${status.user.email}` : 'Using WriteMind as a guest'}
+          Your text stays private.
         </span>
         <button className="btn" onClick={() => void browser.runtime.openOptionsPage()}>
-          {status?.user ? 'Settings' : 'Sign in'}
+          Settings
         </button>
       </div>
     </div>
