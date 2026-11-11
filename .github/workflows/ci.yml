@@ -87,7 +87,9 @@ jobs:
       - name: End-to-end tests (real Chromium + extension + API)
         working-directory: extension
         run: |
-          npx playwright install --with-deps chromium
+          # The runner image already has Chromium's system libraries; if the Ubuntu mirrors are unreachable,
+          # install just the browser rather than failing the job.
+          npx playwright install --with-deps chromium || npx playwright install chromium
           xvfb-run -a npx playwright test --trace off
 
   desktop:
