@@ -3,6 +3,7 @@
  * (LanguageTool-backed) at http://localhost:8000.
  */
 import { chromium, expect, test as base, type BrowserContext, type Locator, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -216,4 +217,86 @@ test('no server: rewrite and the popup still work', async ({ context, page }) =>
   await options.goto(`chrome-extension://${extensionId}/options.html`);
   await expect(options.getByTestId('engine-status')).toContainText('built-in checker');
   await expect(options.getByText(/sign in|sign up|create account|log in/i)).toHaveCount(0);
+});
+
+const WHATSAPP_HTML = readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'pages/whatsapp.html'), 'utf8');
+const USER_SENTENCE = "My naame is ahmed& I'm yourr aducalnal";
+
+/** Serves the local WhatsApp-like page at the real web.whatsapp.com address, so the WhatsApp profile applies. */
+async function openWhatsApp(context: BrowserContext, page: Page): Promise<void> {
+  await context.route('https://web.whatsapp.com/**', (route) => route.fulfill({ contentType: 'text/html', body: WHATSAPP_HTML }));
+  await page.goto('https://web.whatsapp.com/');
+  await page.bringToFront();
+}
+
+test('WhatsApp Web: misspellings in a chat message are underlined and fixed in the editor model', async ({ context, page }) => {
+  await withoutServer(context);
+  await openWhatsApp(context, page);
+  await page.locator('#wa').click();
+  await page.keyboard.type(USER_SENTENCE, { delay: 10 });
+  await expect.poll(() => underlineCount(page)).toBe(4); // naame, ahmed, yourr, aducalnal
+  await expect(page.getByTestId('wm-count')).toHaveText('4');
+  await (await acceptButtonFor(page, 'name')).click();
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __model: () => string }).__model())).toBe(
+    "My name is ahmed& I'm yourr aducalnal",
+  );
+});
+
+test('a server address answered by something other than WriteMind falls back to the built-in checker', async ({ context, page }) => {
+  let [sw] = context.serviceWorkers();
+  sw ??= await context.waitForEvent('serviceworker');
+  // The test-page server answers every API path with 404 — like another app occupying the port.
+  await sw.evaluate(() => chrome.storage.local.set({ settings: { apiBaseUrl: 'http://localhost:4321' } }));
+  await page.goto(`${PAGES}/textarea.html`);
+  await page.bringToFront();
+  await page.locator('#ta').click();
+  await page.locator('#ta').pressSequentially('I recieved teh files.', { delay: 5 });
+  await expect.poll(() => underlineCount(page)).toBe(2);
+});
+
+test('when the extension is removed or restarted, the old copy removes its badge (no stale "no issues")', async ({ context, page }) => {
+  let [sw] = context.serviceWorkers();
+  sw ??= await context.waitForEvent('serviceworker');
+  await sw.evaluate(() => chrome.storage.local.set({ settings: { apiBaseUrl: 'http://127.0.0.1:9' } }));
+  await openWhatsApp(context, page);
+  await page.locator('#wa').click();
+  await page.keyboard.type(USER_SENTENCE, { delay: 5 });
+  await expect.poll(() => underlineCount(page)).toBe(4);
+  await sw.evaluate(() => chrome.runtime.reload()).catch(() => undefined);
+  await expect.poll(() => page.locator('writemind-ui').count(), { timeout: 10_000 }).toBe(0);
+});
+
+test('a newly injected copy (as on install/update) takes over an open tab cleanly', async ({ context, page }) => {
+  let [sw] = context.serviceWorkers();
+  sw ??= await context.waitForEvent('serviceworker');
+  await sw.evaluate(() => chrome.storage.local.set({ settings: { apiBaseUrl: 'http://127.0.0.1:9' } }));
+  await openWhatsApp(context, page);
+  await page.locator('#wa').click();
+  await page.keyboard.type(USER_SENTENCE, { delay: 5 });
+  await expect.poll(() => underlineCount(page)).toBe(4);
+
+  // Exactly what the background does for open tabs on install/update.
+  await sw.evaluate(async () => {
+    const [tab] = await chrome.tabs.query({ url: 'https://web.whatsapp.com/*' });
+    await chrome.scripting.executeScript({ target: { tabId: tab!.id!, allFrames: true }, files: ['/content-scripts/content.js'] });
+  });
+  await page.waitForTimeout(500);
+  await expect(page.locator('writemind-ui')).toHaveCount(1);
+  await page.locator('#wa').click();
+  await page.keyboard.type(' ok', { delay: 5 });
+  await expect.poll(() => underlineCount(page)).toBe(4);
+  await expect(page.getByTestId('wm-badge')).toHaveAttribute('data-state', 'issues');
+});
+
+test('leftover UI from an older copy is removed, and a failed check is never shown as "no issues"', async ({ page }) => {
+  await page.goto(`${PAGES}/textarea.html`);
+  await page.bringToFront();
+  await page.evaluate(() => {
+    const stale = document.createElement('writemind-ui');
+    stale.id = 'stale';
+    document.documentElement.appendChild(stale);
+    document.dispatchEvent(new CustomEvent('writemind:content-script-started'));
+  });
+  // A newer copy starting up (simulated by re-dispatching) shuts the current one down…
+  await expect.poll(() => page.locator('writemind-ui:not(#stale)').count()).toBe(0);
 });

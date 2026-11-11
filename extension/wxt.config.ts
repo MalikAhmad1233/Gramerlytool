@@ -11,7 +11,8 @@ export default defineConfig({
     short_name: 'WriteMind',
     description:
       'Detect Instantly. Suggest Intelligently. Let Users Decide. Grammar, spelling and style suggestions you approve one by one.',
-    permissions: ['storage'],
+    // scripting: load WriteMind into tabs that were already open when it was installed or updated.
+    permissions: ['storage', 'scripting'],
     // Editors can live on any site; an optional WriteMind server URL is user-configurable.
     host_permissions: ['<all_urls>'],
     action: { default_title: 'WriteMind AI' },

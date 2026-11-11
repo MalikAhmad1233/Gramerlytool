@@ -8,7 +8,7 @@ export interface UnderlineView {
   rects: Rect[];
 }
 
-export type FieldStatus = 'idle' | 'busy' | 'offline';
+export type FieldStatus = 'idle' | 'busy' | 'error';
 
 export interface RewriteState {
   source: string;
@@ -25,7 +25,7 @@ export interface ViewState {
   underlines: UnderlineView[];
   hoveredId: string | null;
   activeId: string | null;
-  badge: { left: number; top: number; count: number; score: number | null; status: FieldStatus } | null;
+  badge: { left: number; top: number; count: number; score: number | null; status: FieldStatus; error: string | null } | null;
   card: { suggestion: Suggestion; left: number; top: number; canEdit: boolean } | null;
   panel: { open: boolean; tab: 'issues' | 'rewrite' };
   suggestions: Suggestion[];

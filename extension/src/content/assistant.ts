@@ -26,6 +26,10 @@ class FieldSession {
   readonly scheduler: CheckScheduler;
   readonly key = Math.random().toString(36).slice(2);
   status: FieldStatus = 'idle';
+  /** Set only when the last check failed — the badge must never claim "no issues" then. */
+  error: string | null = null;
+  /** True once a check has completed for the current text. */
+  checked = false;
   words = 0;
   private cleanup: Array<() => void> = [];
 
@@ -75,7 +79,13 @@ class FieldSession {
     const text = this.adapter.getText();
     if (text === this.store.currentText) return;
     this.store.setText(text);
+    this.checked = false;
     this.scheduler.poke();
+  }
+
+  /** "No issues" may only be shown after a successful check of the current text. */
+  get verifiedClean(): boolean {
+    return this.checked && this.error === null && this.status === 'idle';
   }
 
   async run(mode: CheckMode): Promise<void> {
@@ -108,9 +118,17 @@ class FieldSession {
       this.store.applyResponse(text, response);
       this.words = response.stats.words;
       this.status = 'idle';
+      this.error = null;
+      this.checked = true;
     } catch (err) {
       if (err instanceof WriteMindError && err.code === 'aborted') return;
-      this.status = err instanceof WriteMindError && ['offline', 'timeout'].includes(err.code) ? 'offline' : 'idle';
+      if (err instanceof WriteMindError && err.code === 'extension_reloaded') {
+        // This copy of WriteMind was replaced by an update: remove it instead of showing stale results.
+        this.owner.orphaned();
+        return;
+      }
+      this.status = 'error';
+      this.error = err instanceof Error ? err.message : 'WriteMind could not check this text.';
     }
     this.owner.queueRender();
     this.owner.reportCount(this.store.visible().length);
@@ -133,6 +151,8 @@ export class Assistant implements Actions {
   private readonly profile: SiteProfile;
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
   uiHost: HTMLElement | null = null;
+  /** Called when this copy of the content script is outdated (extension updated or removed). */
+  onOrphaned: (() => void) | null = null;
 
   constructor(private readonly doc: Document) {
     this.profile = profileFor(doc.location?.hostname ?? '');
@@ -165,6 +185,23 @@ export class Assistant implements Actions {
     win.addEventListener('resize', this.queueRender);
     const active = this.deepActiveElement();
     if (active) this.consider(active);
+  }
+
+  orphaned(): void {
+    this.onOrphaned?.();
+  }
+
+  /** Removes every listener and the current session (used when a newer copy takes over). */
+  stop(): void {
+    const win = this.doc.defaultView;
+    this.doc.removeEventListener('focusin', this.onFocusIn, true);
+    this.doc.removeEventListener('mousemove', this.onMouseMove, { capture: true });
+    this.doc.removeEventListener('click', this.onClick, true);
+    this.doc.removeEventListener('keydown', this.onKeyDown, true);
+    win?.removeEventListener('scroll', this.queueRender, { capture: true });
+    win?.removeEventListener('resize', this.queueRender);
+    this.session?.dispose();
+    this.session = null;
   }
 
   enabledHere(): boolean {
@@ -220,7 +257,9 @@ export class Assistant implements Actions {
   }
 
   reportCount(count: number): void {
-    void send({ type: 'badge', count }).catch(() => undefined);
+    void send({ type: 'badge', count }).catch((err: unknown) => {
+      if (err instanceof WriteMindError && err.code === 'extension_reloaded') this.orphaned();
+    });
   }
 
   queueRender = (): void => {
@@ -290,7 +329,9 @@ export class Assistant implements Actions {
           top: Math.min(Math.max(clip.top, bounds.bottom - 32), win.innerHeight - 32),
           count: suggestions.length,
           score: s.store.score,
-          status: s.status,
+          // While a check for the latest text is pending, show progress rather than a stale "all clear".
+          status: s.status === 'idle' && suggestions.length === 0 && !s.verifiedClean ? 'busy' : s.status,
+          error: s.error,
         };
     this.view.set({
       underlines,

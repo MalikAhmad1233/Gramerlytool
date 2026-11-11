@@ -141,6 +141,25 @@ public class OfflineEngineTests
 
 public class HybridCheckerTests
 {
+    [Theory]
+    [InlineData(404, "<html>Not Found</html>")]
+    [InlineData(200, "<html>some other app</html>")]
+    [InlineData(200, """{"text_hash":"x","language":"en-US","style":"neutral","mode":"fast","suggestions":[],"stats":{"characters":1,"words":1,"sentences":1,"issues":{},"score":100},"engine":{"languagetool":"error","ai":"unavailable","paragraphs_checked":1,"paragraphs_cached":0,"latency_ms":1}}""")]
+    public async Task UsesTheBuiltInCheckerWhenTheServerIsNotUsable(int status, string body)
+    {
+        var handler = new StubHandler((_, _) => new HttpResponseMessage((HttpStatusCode)status)
+        {
+            Content = new StringContent(body, System.Text.Encoding.UTF8, body.StartsWith('{') ? "application/json" : "text/html"),
+        });
+        using var api = new WriteMindApiClient(new Uri("http://localhost:8000"), new MemorySessions(), handler);
+        var hybrid = new HybridChecker(api);
+        var result = await hybrid.CheckAsync(new CheckRequest { Text = "My naame is ahmed& I'm yourr aducalnal", Client = new ClientContext("windows-desktop", "whatsapp") },
+            TestContext.Current.CancellationToken);
+        Assert.Equal("builtin", result.Engine.Languagetool);
+        Assert.Equal(["naame", "ahmed", "yourr", "aducalnal"], result.Suggestions.Select(s => s.Original));
+        Assert.False(await hybrid.RefreshAsync(TestContext.Current.CancellationToken));
+    }
+
     [Fact]
     public async Task FallsBackToBuiltInCheckerWhenTheServerIsUnreachableAndRetriesLater()
     {

@@ -44,10 +44,15 @@ public sealed class HybridChecker
             try
             {
                 var response = await _api.CheckAsync(request, ct);
-                Mark(true, response.Engine.Ai != "unavailable");
-                return response;
+                // A server whose grammar engine is down (or something that is not a WriteMind server) is not used.
+                if (response?.Suggestions is not null && response.Engine is not null && response.Engine.Languagetool != "error")
+                {
+                    Mark(true, response.Engine.Ai != "unavailable");
+                    return response;
+                }
+                Mark(false);
             }
-            catch (WriteMindApiException ex) when (ex.IsOffline || (int?)ex.Status >= 500)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 Mark(false);
             }
@@ -65,10 +70,14 @@ public sealed class HybridChecker
             try
             {
                 var response = await _api.RewriteAsync(request, ct);
-                Mark(true);
-                return response;
+                if (response?.Alternatives is not null)
+                {
+                    Mark(true);
+                    return response;
+                }
+                Mark(false);
             }
-            catch (WriteMindApiException ex) when (ex.IsOffline || (int?)ex.Status >= 500)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 Mark(false);
             }
@@ -83,10 +92,11 @@ public sealed class HybridChecker
         try
         {
             var meta = await _api.MetaAsync(ct);
+            if (meta?.Offsets != "utf-16") throw new WriteMindApiException("not_writemind", "Not a WriteMind server.");
             _serverDownUntil = DateTimeOffset.MinValue;
             Mark(true, meta.AiAvailable);
         }
-        catch (WriteMindApiException)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Mark(false);
         }

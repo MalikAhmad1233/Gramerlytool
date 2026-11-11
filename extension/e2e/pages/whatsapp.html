@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>WhatsApp</title>
+<style>
+  body { margin: 0; background: #0b141a; font: 15px/20px "Segoe UI", Helvetica, sans-serif; color: #e9edef; }
+  footer { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px; background: #202c33; display: flex; gap: 12px; align-items: center; }
+  .input { flex: 1; background: #2a3942; border-radius: 8px; padding: 9px 12px; min-height: 20px; outline: none; }
+  .input p { margin: 0; }
+</style>
+</head>
+<body>
+  <footer>
+    <span>+</span>
+    <!-- Mirrors WhatsApp Web's composer: a Lexical editor that owns its DOM and handles input itself. -->
+    <div id="wa" class="input lexical-rich-text-input" contenteditable="true" role="textbox" spellcheck="true"
+         aria-label="Type a message" title="Type a message" data-tab="10" data-lexical-editor="true"></div>
+  </footer>
+  <script>
+    const ed = document.getElementById('wa');
+    let model = '';
+    let applying = false;
+    function render(caret) {
+      applying = true;
+      ed.innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'selectable-text copyable-text';
+      p.dir = 'ltr';
+      if (model) {
+        const span = document.createElement('span');
+        span.className = 'selectable-text copyable-text';
+        span.setAttribute('data-lexical-text', 'true');
+        span.textContent = model;
+        p.appendChild(span);
+      } else {
+        p.appendChild(document.createElement('br'));
+      }
+      ed.appendChild(p);
+      const text = p.querySelector('span')?.firstChild;
+      if (caret != null && text) {
+        const r = document.createRange();
+        r.setStart(text, Math.min(caret, text.length));
+        r.collapse(true);
+        getSelection().removeAllRanges();
+        getSelection().addRange(r);
+      }
+      queueMicrotask(() => (applying = false));
+    }
+    function offsets() {
+      const sel = getSelection();
+      if (!sel.rangeCount) return [model.length, model.length];
+      const r = sel.getRangeAt(0);
+      const pre = document.createRange();
+      pre.selectNodeContents(ed);
+      pre.setEnd(r.startContainer, r.startOffset);
+      const s = pre.toString().length;
+      return [s, s + r.toString().length];
+    }
+    function replace(data) {
+      const [s, e] = offsets();
+      model = model.slice(0, s) + data + model.slice(e);
+      render(s + data.length);
+    }
+    ed.addEventListener('beforeinput', (e) => {
+      if (['insertText', 'insertReplacementText'].includes(e.inputType)) { e.preventDefault(); replace(e.data || ''); }
+      else if (e.inputType === 'insertFromPaste') { e.preventDefault(); replace(e.dataTransfer?.getData('text/plain') || ''); }
+      else if (e.inputType === 'deleteContentBackward') {
+        e.preventDefault();
+        const [s, en] = offsets();
+        const from = s === en ? Math.max(0, s - 1) : s;
+        model = model.slice(0, from) + model.slice(en);
+        render(from);
+      }
+    });
+    ed.addEventListener('paste', (e) => { e.preventDefault(); replace(e.clipboardData.getData('text/plain')); });
+    new MutationObserver(() => { if (!applying) model = ed.innerText.replace(/\n$/, ''); })
+      .observe(ed, { childList: true, characterData: true, subtree: true });
+    window.__model = () => model;
+    render();
+  </script>
+</body>
+</html>

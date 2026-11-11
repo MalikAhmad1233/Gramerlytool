@@ -29,7 +29,10 @@ internal sealed class FieldSession : IDisposable
     public SuggestionTracker Tracker { get; }
     public CheckScheduler? Scheduler { get; set; }
     public TextSnapshot? Snapshot { get; set; }
-    public bool Offline { get; set; }
+    /// <summary>A check of the current text completed successfully.</summary>
+    public bool Checked { get; set; }
+    /// <summary>The last check failed (shown as an error, never as "no issues").</summary>
+    public bool Failed { get; set; }
     public Rect Bounds { get; set; } = Rect.Empty;
     public CancellationTokenSource FastCts { get; set; } = new();
     public CancellationTokenSource FullCts { get; set; } = new();
@@ -221,6 +224,7 @@ internal sealed class AssistantController : IDisposable
             {
                 session.Snapshot = snapshot;
                 session.Tracker.SetText(snapshot.Text);
+                session.Checked = false;
                 session.Scheduler?.Poke();
             }
             session.Snapshot ??= snapshot;
@@ -258,7 +262,8 @@ internal sealed class AssistantController : IDisposable
     {
         if (!ReferenceEquals(session, _session)) return;
         _overlay?.Render(session.Bounds, _items, _hoveredId);
-        if (hasText && !session.Bounds.IsEmpty) _badge?.ShowAt(session.Bounds, count, session.Offline);
+        var state = session.Failed ? BadgeState.Error : session.Checked ? BadgeState.Ready : BadgeState.Checking;
+        if (hasText && !session.Bounds.IsEmpty) _badge?.ShowAt(session.Bounds, count, state);
         else _badge?.Hide();
         if (_assistant?.IsVisible == true) RefreshAssistantList(session);
     }
@@ -337,15 +342,16 @@ internal sealed class AssistantController : IDisposable
             }, cts.Token);
             if (!ReferenceEquals(session, _session)) return;
             session.Tracker.Apply(text, response);
-            session.Offline = false;
+            session.Failed = false;
+            if (string.Equals(text, session.Tracker.Text, StringComparison.Ordinal)) session.Checked = true;
         }
         catch (OperationCanceledException)
         {
             return;
         }
-        catch (WriteMindApiException ex)
+        catch (Exception)
         {
-            session.Offline = ex.IsOffline;
+            session.Failed = true;
         }
         _ = PollAsync(); // re-render promptly with fresh geometry
     }

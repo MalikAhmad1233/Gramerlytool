@@ -105,6 +105,14 @@ internal sealed class UnderlineOverlay : Window
     }
 }
 
+/// <summary>"No issues" (✓) is only shown after a check of the current text actually succeeded.</summary>
+internal enum BadgeState
+{
+    Ready,
+    Checking,
+    Error,
+}
+
 /// <summary>Small floating button near the text field showing how many suggestions there are.</summary>
 internal sealed class BadgeWindow : Window
 {
@@ -140,13 +148,23 @@ internal sealed class BadgeWindow : Window
 
     public event EventHandler? Clicked;
 
-    public void ShowAt(Rect fieldPx, int count, bool offline)
+    public void ShowAt(Rect fieldPx, int count, BadgeState state)
     {
-        _count.Text = offline ? "!" : count == 0 ? "✓" : count.ToString(CultureInfo.InvariantCulture);
-        _dot.Background = offline
+        _count.Text = state switch
+        {
+            BadgeState.Error => "!",
+            BadgeState.Checking when count == 0 => "…",
+            _ => count == 0 ? "✓" : count.ToString(CultureInfo.InvariantCulture),
+        };
+        _dot.Background = state == BadgeState.Error
             ? (Brush)Application.Current.FindResource("MutedBrush")
-            : count == 0 ? (Brush)Application.Current.FindResource("OkBrush") : (Brush)Application.Current.FindResource("BrandGradient");
-        ToolTip = offline ? "WriteMind can't reach its service" : count == 0 ? "No issues found" : $"{count} suggestion(s) — open WriteMind";
+            : count == 0 && state == BadgeState.Ready ? (Brush)Application.Current.FindResource("OkBrush") : (Brush)Application.Current.FindResource("BrandGradient");
+        ToolTip = state switch
+        {
+            BadgeState.Error => "WriteMind couldn't check this text",
+            BadgeState.Checking when count == 0 => "Checking…",
+            _ => count == 0 ? "No issues found" : $"{count} suggestion(s) — open WriteMind",
+        };
         if (!IsVisible) Show();
         var dpi = VisualTreeHelper.GetDpi(this);
         var size = new Size(Math.Max(ActualWidth, 38) * dpi.DpiScaleX, Math.Max(ActualHeight, 38) * dpi.DpiScaleY);

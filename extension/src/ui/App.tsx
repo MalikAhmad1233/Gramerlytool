@@ -65,13 +65,15 @@ function Underlines({ view }: { view: ViewState }) {
 
 function Badge({ view, actions }: { view: ViewState; actions: Actions }) {
   const b = view.badge!;
-  const state = b.status === 'offline' ? 'offline' : b.status === 'busy' ? 'busy' : b.count === 0 ? 'clean' : '';
+  const state = b.status === 'error' ? 'offline' : b.status === 'busy' ? 'busy' : b.count === 0 ? 'clean' : '';
   const label =
-    b.status === 'offline'
-      ? 'WriteMind is offline'
-      : b.count === 0
-        ? 'No issues found'
-        : `${b.count} suggestion${b.count === 1 ? '' : 's'} — open WriteMind`;
+    b.status === 'error'
+      ? `WriteMind couldn't check this text${b.error ? `: ${b.error}` : ''}`
+      : b.status === 'busy' && b.count === 0
+        ? 'Checking…'
+        : b.count === 0
+          ? 'No issues found'
+          : `${b.count} suggestion${b.count === 1 ? '' : 's'} — open WriteMind`;
   return (
     <button
       className={`wm-badge ${state}`}
@@ -79,9 +81,10 @@ function Badge({ view, actions }: { view: ViewState; actions: Actions }) {
       title={label}
       aria-label={label}
       data-testid="wm-badge"
+      data-state={state || 'issues'}
       onClick={() => (view.panel.open ? actions.closePanel() : actions.openPanel('issues'))}
     >
-      <span className="dot">{b.status === 'offline' ? '!' : b.count === 0 ? '✓' : 'W'}</span>
+      <span className="dot">{b.status === 'error' ? '!' : b.count > 0 ? 'W' : b.status === 'busy' ? '…' : '✓'}</span>
       {b.count > 0 && <span data-testid="wm-count">{b.count}</span>}
     </button>
   );

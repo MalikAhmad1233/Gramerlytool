@@ -59,8 +59,8 @@ Full design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | `/v1/check` latency (HTTP, fast mode, typing simulation) | p50 **52 ms**, p95 **60 ms** |
 | Built-in checker (no server) | **42/42** fixture errors and **25/25** held-out errors fixed, **0/60** false positives |
 | Extension unit tests (vitest) | **211 passed** |
-| Extension end-to-end (Playwright, real Chromium + extension) | **8 passed** — textarea, Gmail-style, Lexical-style editor, sensitive fields, rewrite, and two runs with no server |
-| Windows Core (xUnit, incl. live API test) | **198 passed** — incl. 135 cases proving the Windows checker matches the extension exactly |
+| Extension end-to-end (Playwright, real Chromium + extension) | **13 passed** — textarea, Gmail-style, Lexical-style and WhatsApp Web editors, sensitive fields, rewrite, no server, a non-WriteMind server, and taking over open tabs after an update |
+| Windows Core (xUnit, incl. live API test) | **201 passed** — incl. 135 cases proving the Windows checker matches the extension exactly |
 | Windows app (WPF) | Builds clean with warnings-as-errors; CI builds/tests/publishes on `windows-latest` |
 
 The WPF app's UI Automation layer (reading Word/Outlook/Notepad and typing accepted corrections) can

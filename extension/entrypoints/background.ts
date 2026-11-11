@@ -57,6 +57,12 @@ export default defineBackground(() => {
     lastStatus = { engine: up ? 'server' : 'builtin', aiAvailable: up && aiAvailable };
   }
 
+  /** Any server problem (unreachable, not a WriteMind server, errors, degraded engine) → built-in checker. */
+  function isUsableCheck(result: unknown): result is CheckResponse {
+    const r = result as CheckResponse | null;
+    return !!r && Array.isArray(r.suggestions) && !!r.engine && r.engine.languagetool !== 'error';
+  }
+
   async function check(payload: CheckRequest, signal: AbortSignal): Promise<CheckResponse> {
     if (serverAvailable()) {
       try {
@@ -65,10 +71,13 @@ export default defineBackground(() => {
           signal,
           timeoutMs: payload.mode === 'fast' ? 4_000 : 10_000,
         });
-        markServer(true, result.engine.ai !== 'unavailable');
-        return result;
+        if (isUsableCheck(result)) {
+          markServer(true, result.engine.ai !== 'unavailable');
+          return result;
+        }
+        markServer(false);
       } catch (err) {
-        if (!(err instanceof WriteMindError) || !['offline', 'timeout'].includes(err.code)) throw err;
+        if (err instanceof WriteMindError && err.code === 'aborted') throw err;
         markServer(false);
       }
     }
@@ -84,14 +93,34 @@ export default defineBackground(() => {
     if (serverAvailable()) {
       try {
         const result = await apiRequest<RewriteResponse>('/v1/rewrite', { body: payload });
-        markServer(true);
-        return result;
-      } catch (err) {
-        if (!(err instanceof WriteMindError) || !['offline', 'timeout'].includes(err.code)) throw err;
+        if (result && Array.isArray(result.alternatives)) {
+          markServer(true);
+          return result;
+        }
+        markServer(false);
+      } catch {
         markServer(false);
       }
     }
     return rewriteOffline(payload.text, payload.style, payload.count, payload.language, await speller(payload.language));
+  }
+
+  /**
+   * Chrome only injects declared content scripts into pages loaded *after* install/update. Inject into tabs that
+   * are already open so WriteMind works there immediately (and replaces any outdated copy) without a refresh.
+   */
+  async function injectIntoOpenTabs(): Promise<void> {
+    const tabs = await browser.tabs.query({ url: ['http://*/*', 'https://*/*'] }).catch(() => []);
+    await Promise.all(
+      tabs.map(async (tab) => {
+        if (tab.id === undefined || tab.discarded) return;
+        try {
+          await browser.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: ['/content-scripts/content.js'] });
+        } catch {
+          /* restricted pages (Web Store, PDFs) cannot be scripted */
+        }
+      }),
+    );
   }
 
   async function flushFeedback(): Promise<void> {
@@ -155,7 +184,8 @@ export default defineBackground(() => {
       }
       case 'status': {
         try {
-          const meta = await apiRequest<{ ai_available: boolean }>('/v1/meta', { timeoutMs: 3_000 });
+          const meta = await apiRequest<{ ai_available: boolean; offsets?: string }>('/v1/meta', { timeoutMs: 3_000 });
+          if (!meta || meta.offsets !== 'utf-16') throw new WriteMindError('not_writemind', 'Not a WriteMind server.');
           serverDownUntil = 0;
           markServer(true, meta.ai_available);
         } catch {
@@ -194,6 +224,7 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onInstalled.addListener(({ reason }) => {
+    if (reason === 'install' || reason === 'update') void injectIntoOpenTabs();
     if (reason === 'install') void browser.runtime.openOptionsPage();
   });
 });
